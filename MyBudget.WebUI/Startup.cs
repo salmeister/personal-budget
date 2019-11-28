@@ -28,8 +28,6 @@ namespace MyBudget.WebUI
             var connection = Configuration.GetConnectionString("MyBudget");
             services.AddDbContext<MyBudgetContext>(options => options.UseSqlServer(connection));
 
-            var oldConnection = Configuration.GetConnectionString("OldBudget");
-            services.AddDbContext<DAL.OldBudget.BudgetContext>(options => options.UseSqlServer(oldConnection));
 
             services.AddRazorPages();
         }

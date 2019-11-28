@@ -84,8 +84,6 @@
   <ItemGroup>
     <None Include="dbo\Data\SeedData.sql" />
     <None Include="Snapshots\MyBudget_Empty.dacpac" />
-    <None Include="Snapshots\MyBudget_SeedData.dacpac" />
-    <None Include="Snapshots\MyBudget_DB_MyTestData.dacpac" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="dbo\Data\Script.PostDeployment.sql" />

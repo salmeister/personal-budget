@@ -24,8 +24,6 @@ namespace MyBudget.WebUI.Pages.Expenses
 
         public void OnGet()
         {
-            ViewData["MonthId"] = new SelectList(_context.Months, "MonthPk", "MonthAbbr");
-            ViewData["YearId"] = new SelectList(_context.Years.Where(y => y.YearPk <= DateTime.Now.Year), "YearPk", "YearPk");
 
             Expenses = _context.Expenses
                 .Include(e => e.ExpenseType)
