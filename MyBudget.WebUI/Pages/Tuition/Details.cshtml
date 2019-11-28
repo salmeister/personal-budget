@@ -1,0 +1,43 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Tuition.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Tuition</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Tuition.TuitionAlias)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Tuition.TuitionAlias)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Tuition.Active)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Tuition.Active)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Tuition.FamilyMember)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Tuition.FamilyMember.FirstName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Tuition.Institution)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Tuition.Institution.InstitutionName)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Tuition.TuitionPk">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

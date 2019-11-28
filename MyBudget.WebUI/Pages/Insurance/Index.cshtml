@@ -1,0 +1,66 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Insurance.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Insurance</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Insurance[0].InsuranceAlias)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Insurance[0].Active)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Insurance[0].FamilyMember)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Insurance[0].InsuranceType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Insurance[0].Property)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Insurance[0].Vehicle)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Insurance) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.InsuranceAlias)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FamilyMember.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InsuranceType.InsurTypeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Property.PropertyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Vehicle.VehicleName)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.InsurancePk">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.InsurancePk">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.InsurancePk">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

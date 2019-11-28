@@ -1,0 +1,54 @@
+﻿@page
+@model MyBudget.WebUI.Pages.FamilyMember.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Family Members</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FamilyMembers[0].FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FamilyMembers[0].MiddleName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FamilyMembers[0].LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FamilyMembers[0].Active)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.FamilyMembers) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MiddleName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.FamilyMemberPk">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.FamilyMemberPk">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.FamilyMemberPk">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

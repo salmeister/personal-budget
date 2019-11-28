@@ -1,0 +1,72 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Property.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Properties</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Properties[0].PropertyName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Properties[0].PropertyAddress1)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Properties[0].PropertyAddress2)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Properties[0].PropertyCity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Properties[0].PropertyState)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Properties[0].PropertyZip)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Properties[0].Active)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Properties) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PropertyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PropertyAddress1)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PropertyAddress2)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PropertyCity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PropertyState)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PropertyZip)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.PropertyPk">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.PropertyPk">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.PropertyPk">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

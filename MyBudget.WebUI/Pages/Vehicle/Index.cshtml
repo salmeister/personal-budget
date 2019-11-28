@@ -1,0 +1,60 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Vehicle.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Vehicles</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Vehicles[0].VehicleName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Vehicles[0].VehicleModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Vehicles[0].VehicleMake)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Vehicles[0].Active)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Vehicles[0].VehicleYear)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Vehicles) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.VehicleName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VehicleModel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VehicleMake)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VehicleYear.YearPk)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.VehiclePk">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.VehiclePk">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.VehiclePk">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

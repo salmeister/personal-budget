@@ -1,0 +1,66 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Loan.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Loans</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Loans[0].LoanAlias)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Loans[0].Active)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Loans[0].FamilyMember)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Loans[0].LoanType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Loans[0].Property)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Loans[0].Vehicle)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Loans) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.LoanAlias)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FamilyMember.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LoanType.LoanTypeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Property.PropertyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Vehicle.VehicleName)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.LoanPk">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.LoanPk">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.LoanPk">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

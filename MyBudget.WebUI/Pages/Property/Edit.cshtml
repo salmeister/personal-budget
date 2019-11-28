@@ -1,0 +1,65 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Property.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Properties</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Properties.PropertyPk" />
+            <div class="form-group">
+                <label asp-for="Properties.PropertyName" class="control-label"></label>
+                <input asp-for="Properties.PropertyName" class="form-control" />
+                <span asp-validation-for="Properties.PropertyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Properties.PropertyAddress1" class="control-label"></label>
+                <input asp-for="Properties.PropertyAddress1" class="form-control" />
+                <span asp-validation-for="Properties.PropertyAddress1" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Properties.PropertyAddress2" class="control-label"></label>
+                <input asp-for="Properties.PropertyAddress2" class="form-control" />
+                <span asp-validation-for="Properties.PropertyAddress2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Properties.PropertyCity" class="control-label"></label>
+                <input asp-for="Properties.PropertyCity" class="form-control" />
+                <span asp-validation-for="Properties.PropertyCity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Properties.PropertyState" class="control-label"></label>
+                <input asp-for="Properties.PropertyState" class="form-control" />
+                <span asp-validation-for="Properties.PropertyState" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Properties.PropertyZip" class="control-label"></label>
+                <input asp-for="Properties.PropertyZip" class="form-control" />
+                <span asp-validation-for="Properties.PropertyZip" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Properties.Active" /> @Html.DisplayNameFor(model => model.Properties.Active)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

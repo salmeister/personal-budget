@@ -1,0 +1,55 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Vehicle.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Vehicles</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Vehicles.VehiclePk" />
+            <div class="form-group">
+                <label asp-for="Vehicles.VehicleName" class="control-label"></label>
+                <input asp-for="Vehicles.VehicleName" class="form-control" />
+                <span asp-validation-for="Vehicles.VehicleName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Vehicles.VehicleModel" class="control-label"></label>
+                <input asp-for="Vehicles.VehicleModel" class="form-control" />
+                <span asp-validation-for="Vehicles.VehicleModel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Vehicles.VehicleMake" class="control-label"></label>
+                <input asp-for="Vehicles.VehicleMake" class="form-control" />
+                <span asp-validation-for="Vehicles.VehicleMake" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Vehicles.VehicleYear" class="control-label"></label>
+                <select asp-for="Vehicles.VehicleYearId" class="form-control" asp-items="ViewBag.VehicleYearId"></select>
+                <span asp-validation-for="Vehicles.VehicleYearId" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Vehicles.Active" /> @Html.DisplayNameFor(model => model.Vehicles.Active)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

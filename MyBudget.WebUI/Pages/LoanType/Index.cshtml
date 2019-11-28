@@ -1,0 +1,42 @@
+﻿@page
+@model MyBudget.WebUI.Pages.LoanType.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Loan Types</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.LoanTypes[0].LoanTypeName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LoanTypes[0].Active)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.LoanTypes) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.LoanTypeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.LoanTypePk">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.LoanTypePk">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.LoanTypePk">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

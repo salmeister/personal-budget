@@ -1,0 +1,52 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Expenses.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Expenses</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Expenses.Amount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Expenses.Amount)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Expenses.DueDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Expenses.DueDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Expenses.ExpenseType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Expenses.ExpenseType.ExpenseType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Expenses.Month)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Expenses.Month.MonthAbbr)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Expenses.Year)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Expenses.Year.YearPk)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="Expenses.ExpensePk" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

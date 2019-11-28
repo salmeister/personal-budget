@@ -1,0 +1,72 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Institution.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Institutions</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Institutions[0].InstitutionName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Institutions[0].InstitutionAddress1)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Institutions[0].InstitutionAddress2)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Institutions[0].InstitutionCity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Institutions[0].InstitutionState)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Institutions[0].InstitutionZip)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Institutions[0].Active)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Institutions) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.InstitutionName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InstitutionAddress1)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InstitutionAddress2)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InstitutionCity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InstitutionState)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InstitutionZip)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.InstitutionPk">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.InstitutionPk">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.InstitutionPk">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

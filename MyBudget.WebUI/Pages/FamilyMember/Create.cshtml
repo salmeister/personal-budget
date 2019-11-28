@@ -1,0 +1,49 @@
+﻿@page
+@model MyBudget.WebUI.Pages.FamilyMember.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>FamilyMembers</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="FamilyMembers.FirstName" class="control-label"></label>
+                <input asp-for="FamilyMembers.FirstName" class="form-control" />
+                <span asp-validation-for="FamilyMembers.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FamilyMembers.MiddleName" class="control-label"></label>
+                <input asp-for="FamilyMembers.MiddleName" class="form-control" />
+                <span asp-validation-for="FamilyMembers.MiddleName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FamilyMembers.LastName" class="control-label"></label>
+                <input asp-for="FamilyMembers.LastName" class="form-control" />
+                <span asp-validation-for="FamilyMembers.LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="FamilyMembers.Active" checked="checked" /> @Html.DisplayNameFor(model => model.FamilyMembers.Active)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

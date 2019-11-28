@@ -1,0 +1,65 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Institution.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Institutions</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Institutions.InstitutionPk" />
+            <div class="form-group">
+                <label asp-for="Institutions.InstitutionName" class="control-label"></label>
+                <input asp-for="Institutions.InstitutionName" class="form-control" />
+                <span asp-validation-for="Institutions.InstitutionName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Institutions.InstitutionAddress1" class="control-label"></label>
+                <input asp-for="Institutions.InstitutionAddress1" class="form-control" />
+                <span asp-validation-for="Institutions.InstitutionAddress1" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Institutions.InstitutionAddress2" class="control-label"></label>
+                <input asp-for="Institutions.InstitutionAddress2" class="form-control" />
+                <span asp-validation-for="Institutions.InstitutionAddress2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Institutions.InstitutionCity" class="control-label"></label>
+                <input asp-for="Institutions.InstitutionCity" class="form-control" />
+                <span asp-validation-for="Institutions.InstitutionCity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Institutions.InstitutionState" class="control-label"></label>
+                <input asp-for="Institutions.InstitutionState" class="form-control" />
+                <span asp-validation-for="Institutions.InstitutionState" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Institutions.InstitutionZip" class="control-label"></label>
+                <input asp-for="Institutions.InstitutionZip" class="form-control" />
+                <span asp-validation-for="Institutions.InstitutionZip" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Institutions.Active" /> @Html.DisplayNameFor(model => model.Institutions.Active)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

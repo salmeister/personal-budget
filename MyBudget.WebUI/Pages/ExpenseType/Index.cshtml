@@ -1,0 +1,43 @@
+﻿@page
+@model MyBudget.WebUI.Pages.ExpenseType.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+    <h1>Expense Types</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ExpenseTypes[0].ExpenseType)
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.ExpenseTypes[0].ExpenseTypeAbbr)*@
+                @Html.DisplayName("Abbrevation")
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.ExpenseTypes) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExpenseType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExpenseTypeAbbr)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ExpenseTypePk">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ExpenseTypePk">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ExpenseTypePk">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
