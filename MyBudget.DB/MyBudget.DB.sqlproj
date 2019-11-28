@@ -82,7 +82,6 @@
     <Build Include="dbo\Tables\years.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="dbo\Data\SeedData.sql" />
     <None Include="Snapshots\MyBudget_Empty.dacpac" />
   </ItemGroup>
   <ItemGroup>
