@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Vehicle
 {
     public class EditModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public EditModel(MyBudget.DAL.MyBudgetContext context)
+        public EditModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -29,14 +31,14 @@ namespace MyBudget.WebUI.Pages.Vehicle
                 return NotFound();
             }
 
-            Vehicles = await _context.Vehicles
-                .Include(v => v.VehicleYear).FirstOrDefaultAsync(m => m.VehiclePk == id);
+            var includes = new Expression<Func<DAL.Vehicles, Object>>[] { x => x.VehicleYear };
+            Vehicles = (await _repoWrapper.Vehicles.Get(m => m.VehiclePk == id, includes)).FirstOrDefault();
 
             if (Vehicles == null)
             {
                 return NotFound();
             }
-           ViewData["VehicleYearId"] = new SelectList(_context.Years, "YearPk", "YearPk");
+            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.GetAll(), "YearPk", "YearPk");
             return Page();
         }
 
@@ -49,15 +51,15 @@ namespace MyBudget.WebUI.Pages.Vehicle
                 return Page();
             }
 
-            _context.Attach(Vehicles).State = EntityState.Modified;
+            _repoWrapper.Vehicles.Update(Vehicles);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repoWrapper.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VehiclesExists(Vehicles.VehiclePk))
+                if (!(await VehiclesExists(Vehicles.VehiclePk)))
                 {
                     return NotFound();
                 }
@@ -70,9 +72,9 @@ namespace MyBudget.WebUI.Pages.Vehicle
             return RedirectToPage("./Index");
         }
 
-        private bool VehiclesExists(int id)
+        private async Task<bool> VehiclesExists(int id)
         {
-            return _context.Vehicles.Any(e => e.VehiclePk == id);
+            return !(await _repoWrapper.Vehicles.Find(id) == null);
         }
     }
 }

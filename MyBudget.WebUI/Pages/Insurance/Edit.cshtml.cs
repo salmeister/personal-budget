@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Insurance
 {
     public class EditModel : PageModel
     {
-        private readonly DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public EditModel(DAL.MyBudgetContext context)
+        public EditModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -28,20 +30,20 @@ namespace MyBudget.WebUI.Pages.Insurance
                 return NotFound();
             }
 
-            Insurance = await _context.Insurance
-                .Include(i => i.FamilyMember)
-                .Include(i => i.InsuranceType)
-                .Include(i => i.Property)
-                .Include(i => i.Vehicle).FirstOrDefaultAsync(m => m.InsurancePk == id);
+            var includes = new Expression<Func<DAL.Insurance, Object>>[] { x => x.FamilyMember, x => x.InsuranceType, x => x.Property, x => x.Vehicle };
+            Insurance = (await _repoWrapper.Insurance.Get(m => m.InsurancePk == id, includes)).FirstOrDefault();
 
             if (Insurance == null)
             {
                 return NotFound();
             }
-           ViewData["FamilyMemberId"] = new SelectList(_context.FamilyMembers, "FamilyMemberPk", "FirstName");
-           ViewData["InsuranceTypeId"] = new SelectList(_context.InsuranceTypes, "InsurTypePk", "InsurTypeName");
-           ViewData["PropertyId"] = new SelectList(_context.Properties, "PropertyPk", "PropertyName");
-           ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehiclePk", "VehicleName");
+
+            ViewData["FamilyMemberId"] = new SelectList(await _repoWrapper.FamilyMembers.GetAll(), "FamilyMemberPk", "FirstName");
+            ViewData["InsuranceTypeId"] = new SelectList(await _repoWrapper.InsuranceTypes.GetAll(), "InsurTypePk", "InsurTypeName");
+            ViewData["PropertyId"] = new SelectList(await _repoWrapper.Properties.GetAll(), "PropertyPk", "PropertyName");
+            ViewData["VehicleId"] = new SelectList(await _repoWrapper.Vehicles.GetAll(), "VehiclePk", "VehicleName");
+            ViewData["MonthId"] = new SelectList(await _repoWrapper.Months.GetAll(), "MonthPk", "MonthAbbr");
+            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.GetAll(), "YearPk", "YearPk");
             return Page();
         }
 
@@ -54,15 +56,15 @@ namespace MyBudget.WebUI.Pages.Insurance
                 return Page();
             }
 
-            _context.Attach(Insurance).State = EntityState.Modified;
+            _repoWrapper.Insurance.Update(Insurance);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repoWrapper.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!InsuranceExists(Insurance.InsurancePk))
+                if (!(await InsuranceExists(Insurance.InsurancePk)))
                 {
                     return NotFound();
                 }
@@ -75,9 +77,9 @@ namespace MyBudget.WebUI.Pages.Insurance
             return RedirectToPage("./Index");
         }
 
-        private bool InsuranceExists(int id)
+        private async Task<bool> InsuranceExists(int id)
         {
-            return _context.Insurance.Any(e => e.InsurancePk == id);
+            return !(await _repoWrapper.Insurance.Find(id) == null);
         }
     }
 }

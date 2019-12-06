@@ -4228,7 +4228,7 @@ jQuery.extend( {
 	},
 
 	removeData: function( elem, name ) {
-		dataUser.remove( elem, name );
+		dataUser.Delete( elem, name );
 	},
 
 	// TODO: Now that all calls to _data and _removeData have been replaced
@@ -4238,7 +4238,7 @@ jQuery.extend( {
 	},
 
 	_removeData: function( elem, name ) {
-		dataPriv.remove( elem, name );
+		dataPriv.Delete( elem, name );
 	}
 } );
 
@@ -4320,7 +4320,7 @@ jQuery.fn.extend( {
 
 	removeData: function( key ) {
 		return this.each( function() {
-			dataUser.remove( this, key );
+			dataUser.Delete( this, key );
 		} );
 	}
 } );
@@ -4386,7 +4386,7 @@ jQuery.extend( {
 		var key = type + "queueHooks";
 		return dataPriv.get( elem, key ) || dataPriv.access( elem, key, {
 			empty: jQuery.Callbacks( "once memory" ).add( function() {
-				dataPriv.remove( elem, [ type + "queue", key ] );
+				dataPriv.Delete( elem, [ type + "queue", key ] );
 			} )
 		} );
 	}
@@ -5085,7 +5085,7 @@ jQuery.event = {
 			// Unbind all events (on this namespace, if provided) for the element
 			if ( !type ) {
 				for ( type in events ) {
-					jQuery.event.remove( elem, type + types[ t ], handler, selector, true );
+					jQuery.event.Delete( elem, type + types[ t ], handler, selector, true );
 				}
 				continue;
 			}
@@ -5132,7 +5132,7 @@ jQuery.event = {
 
 		// Remove data and the expando if it's no longer used
 		if ( jQuery.isEmptyObject( events ) ) {
-			dataPriv.remove( elem, "handle events" );
+			dataPriv.Delete( elem, "handle events" );
 		}
 	},
 
@@ -5582,7 +5582,7 @@ jQuery.fn.extend( {
 			fn = returnFalse;
 		}
 		return this.each( function() {
-			jQuery.event.remove( this, types, fn, selector );
+			jQuery.event.Delete( this, types, fn, selector );
 		} );
 	}
 } );
@@ -5849,7 +5849,7 @@ jQuery.extend( {
 					if ( data.events ) {
 						for ( type in data.events ) {
 							if ( special[ type ] ) {
-								jQuery.event.remove( elem, type );
+								jQuery.event.Delete( elem, type );
 
 							// This is a shortcut to avoid jQuery.event.remove's overhead
 							} else {
@@ -7010,7 +7010,7 @@ function defaultPrefilter( elem, props, opts ) {
 				if ( !hidden ) {
 					showHide( [ elem ] );
 				}
-				dataPriv.remove( elem, "fxshow" );
+				dataPriv.Delete( elem, "fxshow" );
 				for ( prop in orig ) {
 					jQuery.style( elem, prop, orig[ prop ] );
 				}
@@ -8368,7 +8368,7 @@ if ( !support.focusin ) {
 
 				if ( !attaches ) {
 					doc.removeEventListener( orig, handler, true );
-					dataPriv.remove( doc, fix );
+					dataPriv.Delete( doc, fix );
 
 				} else {
 					dataPriv.access( doc, fix, attaches );
@@ -9667,7 +9667,7 @@ jQuery.ajaxTransport( "script", function( s ) {
 				} ).on(
 					"load error",
 					callback = function( evt ) {
-						script.remove();
+						script.Delete();
 						callback = null;
 						if ( evt ) {
 							complete( evt.type === "error" ? 404 : 200, evt.type );
@@ -9841,7 +9841,7 @@ jQuery.parseHTML = function( data, context, keepScripts ) {
 	parsed = buildFragment( [ data ], context, scripts );
 
 	if ( scripts && scripts.length ) {
-		jQuery( scripts ).remove();
+		jQuery( scripts ).Delete();
 	}
 
 	return jQuery.merge( [], parsed.childNodes );

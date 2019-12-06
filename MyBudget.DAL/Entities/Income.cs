@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyBudget.DAL
 {
@@ -11,8 +12,10 @@ namespace MyBudget.DAL
         public int MonthId { get; set; }
         public int FamilyMemberId { get; set; }
         public int IncomeSourceId { get; set; }
+        [DisplayFormat(DataFormatString = "{0:C}")]
         public decimal? Amount { get; set; }
         [DisplayName("Received")]
+        [DisplayFormat(DataFormatString = "{0:d}")]
         public DateTime? ReceivedDate { get; set; }
 
         [DisplayName("Family Member")]

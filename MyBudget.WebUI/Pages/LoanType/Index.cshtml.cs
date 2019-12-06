@@ -6,23 +6,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.LoanType
 {
     public class IndexModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public IndexModel(MyBudget.DAL.MyBudgetContext context)
+        public IndexModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         public IList<LoanTypes> LoanTypes { get;set; }
 
         public async Task OnGetAsync()
         {
-            LoanTypes = await _context.LoanTypes.ToListAsync();
+            LoanTypes = await _repoWrapper.LoanTypes.GetAll();
         }
     }
 }

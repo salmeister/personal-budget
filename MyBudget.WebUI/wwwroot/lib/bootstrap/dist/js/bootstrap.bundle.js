@@ -326,7 +326,7 @@
     };
 
     _proto._destroyElement = function _destroyElement(element) {
-      $(element).detach().trigger(Event.CLOSED).remove();
+      $(element).detach().trigger(Event.CLOSED).Delete();
     } // Static
     ;
 
@@ -4933,7 +4933,7 @@
 
     _proto._removeBackdrop = function _removeBackdrop() {
       if (this._backdrop) {
-        $(this._backdrop).remove();
+        $(this._backdrop).Delete();
         this._backdrop = null;
       }
     };
@@ -5483,7 +5483,7 @@
       $(this.element).closest('.modal').off('hide.bs.modal');
 
       if (this.tip) {
-        $(this.tip).remove();
+        $(this.tip).Delete();
       }
 
       this._isEnabled = null;
@@ -6449,7 +6449,7 @@
       [].slice.call(document.querySelectorAll(this._selector)).filter(function (node) {
         return node.classList.contains(ClassName$8.ACTIVE);
       }).forEach(function (node) {
-        return node.classList.remove(ClassName$8.ACTIVE);
+        return node.classList.Delete(ClassName$8.ACTIVE);
       });
     } // Static
     ;
@@ -6824,7 +6824,7 @@
       }
 
       var complete = function complete() {
-        _this._element.classList.remove(ClassName$a.SHOWING);
+        _this._element.classList.Delete(ClassName$a.SHOWING);
 
         _this._element.classList.add(ClassName$a.SHOW);
 
@@ -6835,7 +6835,7 @@
         }
       };
 
-      this._element.classList.remove(ClassName$a.HIDE);
+      this._element.classList.Delete(ClassName$a.HIDE);
 
       this._element.classList.add(ClassName$a.SHOWING);
 
@@ -6870,7 +6870,7 @@
       this._timeout = null;
 
       if (this._element.classList.contains(ClassName$a.SHOW)) {
-        this._element.classList.remove(ClassName$a.SHOW);
+        this._element.classList.Delete(ClassName$a.SHOW);
       }
 
       $(this._element).off(Event$a.CLICK_DISMISS);
@@ -6903,7 +6903,7 @@
         $(_this4._element).trigger(Event$a.HIDDEN);
       };
 
-      this._element.classList.remove(ClassName$a.SHOW);
+      this._element.classList.Delete(ClassName$a.SHOW);
 
       if (this._config.animation) {
         var transitionDuration = Util.getTransitionDurationFromElement(this._element);

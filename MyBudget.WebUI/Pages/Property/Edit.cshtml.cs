@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Property
 {
     public class EditModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public EditModel(MyBudget.DAL.MyBudgetContext context)
+        public EditModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -29,7 +30,7 @@ namespace MyBudget.WebUI.Pages.Property
                 return NotFound();
             }
 
-            Properties = await _context.Properties.FirstOrDefaultAsync(m => m.PropertyPk == id);
+            Properties = (await _repoWrapper.Properties.Get(m => m.PropertyPk == id)).FirstOrDefault();
 
             if (Properties == null)
             {
@@ -47,15 +48,15 @@ namespace MyBudget.WebUI.Pages.Property
                 return Page();
             }
 
-            _context.Attach(Properties).State = EntityState.Modified;
+            _repoWrapper.Properties.Update(Properties);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repoWrapper.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PropertiesExists(Properties.PropertyPk))
+                if (!(await PropertiesExists(Properties.PropertyPk)))
                 {
                     return NotFound();
                 }
@@ -68,9 +69,9 @@ namespace MyBudget.WebUI.Pages.Property
             return RedirectToPage("./Index");
         }
 
-        private bool PropertiesExists(int id)
+        private async Task<bool> PropertiesExists(int id)
         {
-            return _context.Properties.Any(e => e.PropertyPk == id);
+            return !(await _repoWrapper.Properties.Find(id) == null);
         }
     }
 }

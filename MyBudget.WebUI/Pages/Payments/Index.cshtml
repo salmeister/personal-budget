@@ -1,0 +1,117 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Payments.IndexModel
+
+@{
+    ViewData["Title"] = "Index Payment";
+}
+
+<form method="post">
+    <div style="float:left">
+        <table>
+            <tr>
+                <td rowspan="2">
+                    <h2>Payments</h2>
+                    <a asp-page="Create" asp-route-month=@Model.Month asp-route-year=@Model.Year>Create New</a>
+                </td>
+                <td rowspan="2" style="width:50px"></td>
+                <th>
+                    <label class="control-label">Month</label>
+                </th>
+                <th></th>
+                <th>
+                    <label class="control-label">Year</label>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control" asp-for="@Model.Month" style="width:155px" asp-items="ViewBag.MonthId"></select>
+                </td>
+                <td></td>
+                <td>
+                    <select class="form-control" asp-for="@Model.Year" style="width:155px" asp-items="ViewBag.YearId"></select>
+                </td>
+                <td></td>
+                <td>
+                    <input type="submit" value="Go" class="btn btn-primary" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+
+<div style="float:right">
+    <br />
+    <a asp-page="/Expenses/Index" asp-route-month=@Model.Month asp-route-year=@Model.Year>Expenses</a>
+    <br />
+    <a asp-page="/Income/Index" asp-route-month=@Model.Month asp-route-year=@Model.Year>Income</a>
+</div>
+<div style="clear:both"></div>
+<br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Payments[0].Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Payments[0].DueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Payments[0].Insurance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Payments[0].Loan)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.Payments[0].Month)
+            </th>*@
+            <th>
+                @Html.DisplayNameFor(model => model.Payments[0].Tuition)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Payments[0].Vehicle)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.Payments[0].Year)
+            </th>*@
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Payments)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Insurance.InsuranceAlias)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Loan.LoanAlias)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.Month.MonthAbbr)
+                </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tuition.TuitionAlias)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Vehicle.VehiclePk)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.Year.YearPk)
+                </td>*@
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.PaymentPk">Edit</a> |
+                    @*<a asp-page="./Details" asp-route-id="@item.PaymentPk">Details</a> |*@
+                    <a asp-page="./Delete" asp-route-id="@item.PaymentPk">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -2,7 +2,7 @@
 @model MyBudget.WebUI.Pages.Expenses.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Expense";
 }
 
 <h1>Create</h1>
@@ -14,16 +14,18 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Expenses.YearId" class="control-label"></label>
+                <label asp-for="Expenses.Year" class="control-label"></label>
                 <select asp-for="Expenses.YearId" class ="form-control" asp-items="ViewBag.YearId"></select>
             </div>
             <div class="form-group">
-                <label asp-for="Expenses.MonthId" class="control-label"></label>
+                <label asp-for="Expenses.Month" class="control-label"></label>
                 <select asp-for="Expenses.MonthId" class ="form-control" asp-items="ViewBag.MonthId"></select>
             </div>
             <div class="form-group">
-                <label asp-for="Expenses.ExpenseTypeId" class="control-label"></label>
-                <select asp-for="Expenses.ExpenseTypeId" class ="form-control" asp-items="ViewBag.ExpenseTypeId"></select>
+                <label asp-for="Expenses.ExpenseType" class="control-label"></label>
+                <select asp-for="Expenses.ExpenseTypeId" class="form-control" asp-items="ViewBag.ExpenseTypeId">
+                    <option disabled selected>--- SELECT ---</option>
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="Expenses.Amount" class="control-label"></label>
@@ -43,7 +45,7 @@
 </div>
 
 <div>
-    <a asp-page="Index">Back to List</a>
+    <a asp-page="Index" asp-route-month=@Model.Expenses.MonthId asp-route-year=@Model.Expenses.YearId>Back to List</a>
 </div>
 
 @section Scripts {

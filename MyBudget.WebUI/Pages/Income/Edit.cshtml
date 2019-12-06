@@ -1,0 +1,60 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Income.EditModel
+
+@{
+    ViewData["Title"] = "Edit Income";
+}
+
+<h1>Edit</h1>
+
+<h4>Income</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Income.IncomePk" />
+            <div class="form-group">
+                <label asp-for="Income.Year" class="control-label"></label>
+                <select asp-for="Income.YearId" class="form-control" asp-items="ViewBag.YearId"></select>
+                <span asp-validation-for="Income.YearId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Income.Month" class="control-label"></label>
+                <select asp-for="Income.MonthId" class="form-control" asp-items="ViewBag.MonthId"></select>
+                <span asp-validation-for="Income.MonthId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Income.FamilyMember" class="control-label"></label>
+                <select asp-for="Income.FamilyMemberId" class="form-control" asp-items="ViewBag.FamilyMemberId"></select>
+                <span asp-validation-for="Income.FamilyMemberId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Income.IncomeSource" class="control-label"></label>
+                <select asp-for="Income.IncomeSourceId" class="form-control" asp-items="ViewBag.IncomeSourceId"></select>
+                <span asp-validation-for="Income.IncomeSourceId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Income.Amount" class="control-label"></label>
+                <input asp-for="Income.Amount" class="form-control" />
+                <span asp-validation-for="Income.Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Income.ReceivedDate" class="control-label"></label>
+                <input asp-for="Income.ReceivedDate" class="form-control" />
+                <span asp-validation-for="Income.ReceivedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index" asp-route-month=@Model.Income.MonthId asp-route-year=@Model.Income.YearId>Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

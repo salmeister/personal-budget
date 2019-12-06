@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Property
 {
     public class DeleteModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public DeleteModel(MyBudget.DAL.MyBudgetContext context)
+        public DeleteModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -28,7 +29,7 @@ namespace MyBudget.WebUI.Pages.Property
                 return NotFound();
             }
 
-            Properties = await _context.Properties.FirstOrDefaultAsync(m => m.PropertyPk == id);
+            Properties = (await _repoWrapper.Properties.Get(m => m.PropertyPk == id)).FirstOrDefault();
 
             if (Properties == null)
             {
@@ -44,12 +45,12 @@ namespace MyBudget.WebUI.Pages.Property
                 return NotFound();
             }
 
-            Properties = await _context.Properties.FindAsync(id);
+            Properties = await _repoWrapper.Properties.Find(id.Value);
 
             if (Properties != null)
             {
-                _context.Properties.Remove(Properties);
-                await _context.SaveChangesAsync();
+                _repoWrapper.Properties.Delete(Properties);
+                await _repoWrapper.SaveChanges();
             }
 
             return RedirectToPage("./Index");

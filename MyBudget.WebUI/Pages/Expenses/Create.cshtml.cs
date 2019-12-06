@@ -5,24 +5,25 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Expenses
 {
     public class CreateModel : PageModel
     {
-        private readonly MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public CreateModel(MyBudgetContext context)
+        public CreateModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet(int Month, int Year)
         {
-        ViewData["ExpenseTypeId"] = new SelectList(_context.ExpenseTypes, "ExpenseTypePk", "ExpenseType");
-        ViewData["MonthId"] = new SelectList(_context.Months, "MonthPk", "MonthAbbr");
-        ViewData["YearId"] = new SelectList(_context.Years, "YearPk", "YearPk");
+            Expenses = new DAL.Expenses() { MonthId = Month, YearId = Year };
+            ViewData["ExpenseTypeId"] = new SelectList(await _repoWrapper.ExpenseTypes.GetAll(), "ExpenseTypePk", "ExpenseType");
+            ViewData["MonthId"] = new SelectList(await _repoWrapper.Months.GetAll(), "MonthPk", "MonthAbbr");
+            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.GetAll(), "YearPk", "YearPk");
             return Page();
         }
 
@@ -38,10 +39,10 @@ namespace MyBudget.WebUI.Pages.Expenses
                 return Page();
             }
 
-            _context.Expenses.Add(Expenses);
-            await _context.SaveChangesAsync();
+            await _repoWrapper.Expenses.Add(Expenses);
+            await _repoWrapper.SaveChanges();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Index", new { Month = Expenses.MonthId, Year = Expenses.YearId });
         }
     }
 }

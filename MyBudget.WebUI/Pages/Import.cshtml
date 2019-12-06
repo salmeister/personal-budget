@@ -1,0 +1,68 @@
+﻿@page
+@model MyBudget.WebUI.Pages.ImportModel
+@{
+    ViewData["Title"] = "Import";
+}
+
+<h1>Import</h1>
+
+<p>Use this page to import data for a new month.</p>
+
+
+<form method="post" enctype="multipart/form-data">
+    <table>
+        <tr>
+            <th>
+                <label class="control-label">Month</label>
+            </th>
+            <th></th>
+            <th>
+                <label class="control-label">Year</label>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <select class="form-control" asp-for="Month" style="width:155px" asp-items="ViewBag.MonthId">
+                    <option selected value=""></option>
+                </select>
+            </td>
+            <td></td>
+            <td>
+                <select class="form-control" asp-for="Year" style="width:155px" asp-items="ViewBag.YearId">
+                    <option selected value=""></option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table>
+        <tr>
+            <th>
+                <label class="control-label">Checking</label>
+            </th>
+            <th></th>
+            <th>
+                <label class="control-label">Credit</label>
+            </th>
+            <td></td>
+            <td><label class="control-label">Preview</label>&nbsp;<input type="checkbox" asp-for="Preview" checked="checked"></td>
+            
+        </tr>
+        <tr>
+            <td style="vertical-align:bottom">
+                <input type="file" asp-for="CheckingFile" />
+            </td>
+            <td></td>
+            <td style="vertical-align:bottom">
+                <input type="file" asp-for="CreditFile" />
+            </td>
+            <td></td>
+            <td>
+                <input type="submit" value="Import" class="btn btn-primary" />
+            </td>
+        </tr>
+    </table>
+    <br />
+    <br />
+    @Html.Raw(Model.Result)
+</form>

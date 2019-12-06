@@ -3,6 +3,13 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+## Custom
+Migrated*.sql
+Seed*.sql
+MyBudget_Migrated*.dacpac
+MyBudget_Seed*.dacpac
+## End Custom
+
 # User-specific files
 *.suo
 *.user
@@ -328,3 +335,5 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+/MyBudget.DAL/OldBudget
+/MyBudget.Domain/Migrations

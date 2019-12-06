@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Vehicle
 {
     public class DeleteModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public DeleteModel(MyBudget.DAL.MyBudgetContext context)
+        public DeleteModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -28,8 +30,8 @@ namespace MyBudget.WebUI.Pages.Vehicle
                 return NotFound();
             }
 
-            Vehicles = await _context.Vehicles
-                .Include(v => v.VehicleYear).FirstOrDefaultAsync(m => m.VehiclePk == id);
+            var includes = new Expression<Func<DAL.Vehicles, Object>>[] { x => x.VehicleYear };
+            Vehicles = (await _repoWrapper.Vehicles.Get(m => m.VehiclePk == id, includes)).FirstOrDefault();
 
             if (Vehicles == null)
             {
@@ -45,12 +47,12 @@ namespace MyBudget.WebUI.Pages.Vehicle
                 return NotFound();
             }
 
-            Vehicles = await _context.Vehicles.FindAsync(id);
+            Vehicles = await _repoWrapper.Vehicles.Find(id.Value);
 
             if (Vehicles != null)
             {
-                _context.Vehicles.Remove(Vehicles);
-                await _context.SaveChangesAsync();
+                _repoWrapper.Vehicles.Delete(Vehicles);
+                await _repoWrapper.SaveChanges();
             }
 
             return RedirectToPage("./Index");

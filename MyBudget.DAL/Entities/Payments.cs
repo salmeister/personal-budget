@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyBudget.DAL
 {
@@ -13,8 +14,10 @@ namespace MyBudget.DAL
         public int? InsuranceId { get; set; }
         public int? TuitionId { get; set; }
         public int? VehicleId { get; set; }
+        [DisplayFormat(DataFormatString = "{0:C}")]
         public decimal Amount { get; set; }
         [DisplayName("Due Date")]
+        [DisplayFormat(DataFormatString = "{0:d}")]
         public DateTime? DueDate { get; set; }
 
         public virtual Insurance Insurance { get; set; }

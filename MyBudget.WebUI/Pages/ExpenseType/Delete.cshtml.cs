@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.ExpenseType
 {
     public class DeleteModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public DeleteModel(MyBudget.DAL.MyBudgetContext context)
+        public DeleteModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -28,7 +29,7 @@ namespace MyBudget.WebUI.Pages.ExpenseType
                 return NotFound();
             }
 
-            ExpenseTypes = await _context.ExpenseTypes.FirstOrDefaultAsync(m => m.ExpenseTypePk == id);
+            ExpenseTypes = (await _repoWrapper.ExpenseTypes.Get(m => m.ExpenseTypePk == id)).FirstOrDefault();
 
             if (ExpenseTypes == null)
             {
@@ -44,12 +45,12 @@ namespace MyBudget.WebUI.Pages.ExpenseType
                 return NotFound();
             }
 
-            ExpenseTypes = await _context.ExpenseTypes.FindAsync(id);
+            ExpenseTypes = await _repoWrapper.ExpenseTypes.Find(id.Value);
 
             if (ExpenseTypes != null)
             {
-                _context.ExpenseTypes.Remove(ExpenseTypes);
-                await _context.SaveChangesAsync();
+                _repoWrapper.ExpenseTypes.Delete(ExpenseTypes);
+                await _repoWrapper.SaveChanges();
             }
 
             return RedirectToPage("./Index");

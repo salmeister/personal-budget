@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Vehicle
 {
     public class DetailsModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public DetailsModel(MyBudget.DAL.MyBudgetContext context)
+        public DetailsModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         public Vehicles Vehicles { get; set; }
@@ -27,8 +29,9 @@ namespace MyBudget.WebUI.Pages.Vehicle
                 return NotFound();
             }
 
-            Vehicles = await _context.Vehicles
-                .Include(v => v.VehicleYear).FirstOrDefaultAsync(m => m.VehiclePk == id);
+            var includes = new Expression<Func<DAL.Vehicles, Object>>[] { x => x.VehicleYear };
+            Vehicles = (await _repoWrapper.Vehicles.Get(m => m.VehiclePk == id, includes)).FirstOrDefault();
+
 
             if (Vehicles == null)
             {

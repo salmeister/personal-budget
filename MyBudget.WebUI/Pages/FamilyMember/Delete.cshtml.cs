@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.FamilyMember
 {
     public class DeleteModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public DeleteModel(MyBudget.DAL.MyBudgetContext context)
+        public DeleteModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -28,7 +29,7 @@ namespace MyBudget.WebUI.Pages.FamilyMember
                 return NotFound();
             }
 
-            FamilyMembers = await _context.FamilyMembers.FirstOrDefaultAsync(m => m.FamilyMemberPk == id);
+            FamilyMembers = (await _repoWrapper.FamilyMembers.Get(m => m.FamilyMemberPk == id)).FirstOrDefault();
 
             if (FamilyMembers == null)
             {
@@ -44,12 +45,12 @@ namespace MyBudget.WebUI.Pages.FamilyMember
                 return NotFound();
             }
 
-            FamilyMembers = await _context.FamilyMembers.FindAsync(id);
+            FamilyMembers = await _repoWrapper.FamilyMembers.Find(id.Value);
 
             if (FamilyMembers != null)
             {
-                _context.FamilyMembers.Remove(FamilyMembers);
-                await _context.SaveChangesAsync();
+                _repoWrapper.FamilyMembers.Delete(FamilyMembers);
+                await _repoWrapper.SaveChanges();
             }
 
             return RedirectToPage("./Index");

@@ -15,22 +15,22 @@ namespace MyBudget.DAL
         {
         }
 
-        public virtual DbSet<ExpenseTypes> ExpenseTypes { get; set; }
-        public virtual DbSet<Expenses> Expenses { get; set; }
-        public virtual DbSet<FamilyMembers> FamilyMembers { get; set; }
-        public virtual DbSet<Income> Income { get; set; }
-        public virtual DbSet<IncomeSources> IncomeSources { get; set; }
-        public virtual DbSet<Institutions> Institutions { get; set; }
-        public virtual DbSet<Insurance> Insurance { get; set; }
-        public virtual DbSet<InsuranceTypes> InsuranceTypes { get; set; }
-        public virtual DbSet<LoanTypes> LoanTypes { get; set; }
-        public virtual DbSet<Loans> Loans { get; set; }
+        internal virtual DbSet<ExpenseTypes> ExpenseTypes { get; set; }
+        internal virtual DbSet<Expenses> Expenses { get; set; }
+        internal virtual DbSet<FamilyMembers> FamilyMembers { get; set; }
+        internal virtual DbSet<Income> Income { get; set; }
+        internal virtual DbSet<IncomeSources> IncomeSources { get; set; }
+        internal virtual DbSet<Institutions> Institutions { get; set; }
+        internal virtual DbSet<Insurance> Insurance { get; set; }
+        internal virtual DbSet<InsuranceTypes> InsuranceTypes { get; set; }
+        internal virtual DbSet<LoanTypes> LoanTypes { get; set; }
+        internal virtual DbSet<Loans> Loans { get; set; }
         public virtual DbSet<Months> Months { get; set; }
-        public virtual DbSet<Payments> Payments { get; set; }
-        public virtual DbSet<Properties> Properties { get; set; }
-        public virtual DbSet<Tuition> Tuition { get; set; }
-        public virtual DbSet<Vehicles> Vehicles { get; set; }
-        public virtual DbSet<Years> Years { get; set; }
+        internal virtual DbSet<Payments> Payments { get; set; }
+        internal virtual DbSet<Properties> Properties { get; set; }
+        internal virtual DbSet<Tuition> Tuition { get; set; }
+        internal virtual DbSet<Vehicles> Vehicles { get; set; }
+        internal virtual DbSet<Years> Years { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

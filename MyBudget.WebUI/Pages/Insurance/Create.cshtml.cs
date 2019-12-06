@@ -5,24 +5,25 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Insurance
 {
     public class CreateModel : PageModel
     {
-        private readonly DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public CreateModel(DAL.MyBudgetContext context)
+        public CreateModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
-        ViewData["FamilyMemberId"] = new SelectList(_context.FamilyMembers, "FamilyMemberPk", "FirstName");
-        ViewData["InsuranceTypeId"] = new SelectList(_context.InsuranceTypes, "InsurTypePk", "InsurTypeName");
-        ViewData["PropertyId"] = new SelectList(_context.Properties, "PropertyPk", "PropertyName");
-        ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehiclePk", "VehicleName");
+            ViewData["FamilyMemberId"] = new SelectList(await _repoWrapper.FamilyMembers.Get(s => s.Active), "FamilyMemberPk", "FirstName");
+            ViewData["InsuranceTypeId"] = new SelectList(await _repoWrapper.InsuranceTypes.Get(s => s.Active), "InsurTypePk", "InsurTypeName");
+            ViewData["MonthId"] = new SelectList(await _repoWrapper.Months.GetAll(), "MonthPk", "MonthAbbr");
+            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.GetAll(), "YearPk", "YearPk");
             return Page();
         }
 
@@ -38,8 +39,8 @@ namespace MyBudget.WebUI.Pages.Insurance
                 return Page();
             }
 
-            _context.Insurance.Add(Insurance);
-            await _context.SaveChangesAsync();
+            await _repoWrapper.Insurance.Add(Insurance);
+            await _repoWrapper.SaveChanges();
 
             return RedirectToPage("./Index");
         }

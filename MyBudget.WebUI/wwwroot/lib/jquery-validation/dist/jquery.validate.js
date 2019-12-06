@@ -87,7 +87,7 @@ $.extend( $.fn, {
 						if ( hidden ) {
 
 							// And clean up afterwards; thanks to no-block-scope, hidden can be referenced
-							hidden.remove();
+							hidden.Delete();
 						}
 						if ( result !== undefined ) {
 							return result;
@@ -1113,7 +1113,7 @@ $.extend( $.validator, {
 				// to ensure that the value of the used submit button is passed on
 				// for scripted submits triggered by this method
 				if ( this.submitButton ) {
-					$( "input:hidden[name='" + this.submitButton.name + "']", this.currentForm ).remove();
+					$( "input:hidden[name='" + this.submitButton.name + "']", this.currentForm ).Delete();
 				}
 
 				this.formSubmitted = false;

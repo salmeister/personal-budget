@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.FamilyMember
 {
     public class EditModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public EditModel(MyBudget.DAL.MyBudgetContext context)
+        public EditModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -29,7 +30,7 @@ namespace MyBudget.WebUI.Pages.FamilyMember
                 return NotFound();
             }
 
-            FamilyMembers = await _context.FamilyMembers.FirstOrDefaultAsync(m => m.FamilyMemberPk == id);
+            FamilyMembers = (await _repoWrapper.FamilyMembers.Get(m => m.FamilyMemberPk == id)).FirstOrDefault();
 
             if (FamilyMembers == null)
             {
@@ -47,15 +48,15 @@ namespace MyBudget.WebUI.Pages.FamilyMember
                 return Page();
             }
 
-            _context.Attach(FamilyMembers).State = EntityState.Modified;
+            _repoWrapper.FamilyMembers.Update(FamilyMembers);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repoWrapper.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!FamilyMembersExists(FamilyMembers.FamilyMemberPk))
+                if (! await (FamilyMembersExists(FamilyMembers.FamilyMemberPk)))
                 {
                     return NotFound();
                 }
@@ -68,9 +69,9 @@ namespace MyBudget.WebUI.Pages.FamilyMember
             return RedirectToPage("./Index");
         }
 
-        private bool FamilyMembersExists(int id)
+        private async Task<bool> FamilyMembersExists(int id)
         {
-            return _context.FamilyMembers.Any(e => e.FamilyMemberPk == id);
+            return !(await _repoWrapper.FamilyMembers.Find(id) == null);
         }
     }
 }

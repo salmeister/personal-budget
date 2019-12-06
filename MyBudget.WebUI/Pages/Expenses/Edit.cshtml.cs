@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Expenses
 {
     public class EditModel : PageModel
     {
-        private readonly MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public EditModel(MyBudgetContext context)
+        public EditModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -29,18 +30,16 @@ namespace MyBudget.WebUI.Pages.Expenses
                 return NotFound();
             }
 
-            Expenses = await _context.Expenses
-                .Include(e => e.ExpenseType)
-                .Include(e => e.Month)
-                .Include(e => e.Year).FirstOrDefaultAsync(m => m.ExpensePk == id);
+            var includes = new Expression<Func<DAL.Expenses, Object>>[] { x => x.ExpenseType };
+            Expenses = (await _repoWrapper.Expenses.Get(m => m.ExpensePk == id, includes)).FirstOrDefault();
 
             if (Expenses == null)
             {
                 return NotFound();
             }
-           ViewData["ExpenseTypeId"] = new SelectList(_context.ExpenseTypes, "ExpenseTypePk", "ExpenseType");
-           ViewData["MonthId"] = new SelectList(_context.Months, "MonthPk", "MonthAbbr");
-           ViewData["YearId"] = new SelectList(_context.Years, "YearPk", "YearPk");
+            ViewData["ExpenseTypeId"] = new SelectList(await _repoWrapper.ExpenseTypes.GetAll(), "ExpenseTypePk", "ExpenseType");
+            ViewData["MonthId"] = new SelectList(await _repoWrapper.Months.GetAll(), "MonthPk", "MonthAbbr");
+            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.GetAll(), "YearPk", "YearPk");
             return Page();
         }
 
@@ -53,15 +52,15 @@ namespace MyBudget.WebUI.Pages.Expenses
                 return Page();
             }
 
-            _context.Attach(Expenses).State = EntityState.Modified;
+            _repoWrapper.Expenses.Update(Expenses);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repoWrapper.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ExpensesExists(Expenses.ExpensePk))
+                if (!(await ExpensesExists(Expenses.ExpensePk)))
                 {
                     return NotFound();
                 }
@@ -71,12 +70,12 @@ namespace MyBudget.WebUI.Pages.Expenses
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Index", new { Month = Expenses.MonthId, Year = Expenses.YearId });
         }
 
-        private bool ExpensesExists(int id)
+        private async Task<bool> ExpensesExists(int id)
         {
-            return _context.Expenses.Any(e => e.ExpensePk == id);
+            return !(await _repoWrapper.Payments.Find(id) == null);
         }
     }
 }

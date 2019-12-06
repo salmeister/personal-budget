@@ -2,12 +2,14 @@
 @model MyBudget.WebUI.Pages.Expenses.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Expense";
 }
 
 <h1>Delete</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<div class="warning-msg">
+    This will permantly delete the record from the database. To maintain history, edit the record and update it to be inactive.
+</div>
 <div>
     <h4>Expenses</h4>
     <hr />
@@ -47,6 +49,6 @@
     <form method="post">
         <input type="hidden" asp-for="Expenses.ExpensePk" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-page="./Index">Back to List</a>
+        <a asp-page="./Index" asp-route-month=@Model.Expenses.MonthId asp-route-year=@Model.Expenses.YearId>Back to List</a>
     </form>
 </div>

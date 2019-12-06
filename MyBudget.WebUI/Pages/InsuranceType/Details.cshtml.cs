@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.InsuranceType
 {
     public class DetailsModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public DetailsModel(MyBudget.DAL.MyBudgetContext context)
+        public DetailsModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         public InsuranceTypes InsuranceTypes { get; set; }
@@ -27,7 +28,7 @@ namespace MyBudget.WebUI.Pages.InsuranceType
                 return NotFound();
             }
 
-            InsuranceTypes = await _context.InsuranceTypes.FirstOrDefaultAsync(m => m.InsurTypePk == id);
+            InsuranceTypes = (await _repoWrapper.InsuranceTypes.Get(m => m.InsurTypePk == id)).FirstOrDefault();
 
             if (InsuranceTypes == null)
             {

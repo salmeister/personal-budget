@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.LoanType
 {
     public class DetailsModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public DetailsModel(MyBudget.DAL.MyBudgetContext context)
+        public DetailsModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         public LoanTypes LoanTypes { get; set; }
@@ -27,7 +28,7 @@ namespace MyBudget.WebUI.Pages.LoanType
                 return NotFound();
             }
 
-            LoanTypes = await _context.LoanTypes.FirstOrDefaultAsync(m => m.LoanTypePk == id);
+            LoanTypes = (await _repoWrapper.LoanTypes.Get(m => m.LoanTypePk == id)).FirstOrDefault();
 
             if (LoanTypes == null)
             {

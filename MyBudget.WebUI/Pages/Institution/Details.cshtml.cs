@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Institution
 {
     public class DetailsModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public DetailsModel(MyBudget.DAL.MyBudgetContext context)
+        public DetailsModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         public Institutions Institutions { get; set; }
@@ -27,7 +28,7 @@ namespace MyBudget.WebUI.Pages.Institution
                 return NotFound();
             }
 
-            Institutions = await _context.Institutions.FirstOrDefaultAsync(m => m.InstitutionPk == id);
+            Institutions = (await _repoWrapper.Institutions.Get(m => m.InstitutionPk == id)).FirstOrDefault();
 
             if (Institutions == null)
             {

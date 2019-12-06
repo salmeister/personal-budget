@@ -1,0 +1,60 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Income.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete Income";
+}
+
+<h1>Delete</h1>
+
+<div class="warning-msg">
+    This will permantly delete the record from the database. To maintain history, edit the record and update it to be inactive.
+</div>
+<div>
+    <h4>Income</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Income.Amount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Income.Amount)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Income.ReceivedDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Income.ReceivedDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Income.FamilyMember)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Income.FamilyMember.FirstName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Income.IncomeSource)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Income.IncomeSource.IncomeSourceAcro)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Income.Month)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Income.Month.MonthAbbr)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Income.Year)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Income.Year.YearPk)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="Income.IncomePk" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="./Index" asp-route-month=@Model.Income.MonthId asp-route-year=@Model.Income.YearId>Back to List</a>
+    </form>
+</div>

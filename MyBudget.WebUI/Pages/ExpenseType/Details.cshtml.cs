@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.ExpenseType
 {
     public class DetailsModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public DetailsModel(MyBudget.DAL.MyBudgetContext context)
+        public DetailsModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         public ExpenseTypes ExpenseTypes { get; set; }
@@ -27,7 +28,7 @@ namespace MyBudget.WebUI.Pages.ExpenseType
                 return NotFound();
             }
 
-            ExpenseTypes = await _context.ExpenseTypes.FirstOrDefaultAsync(m => m.ExpenseTypePk == id);
+            ExpenseTypes = (await _repoWrapper.ExpenseTypes.Get(m => m.ExpenseTypePk == id)).FirstOrDefault();
 
             if (ExpenseTypes == null)
             {

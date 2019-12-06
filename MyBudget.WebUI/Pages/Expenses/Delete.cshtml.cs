@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Expenses
 {
     public class DeleteModel : PageModel
     {
-        private readonly MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public DeleteModel(MyBudgetContext context)
+        public DeleteModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -28,10 +29,8 @@ namespace MyBudget.WebUI.Pages.Expenses
                 return NotFound();
             }
 
-            Expenses = await _context.Expenses
-                .Include(e => e.ExpenseType)
-                .Include(e => e.Month)
-                .Include(e => e.Year).FirstOrDefaultAsync(m => m.ExpensePk == id);
+            var includes = new Expression<Func<DAL.Expenses, Object>>[] { x => x.ExpenseType };
+            Expenses = (await _repoWrapper.Expenses.Get(m => m.ExpensePk == id, includes)).FirstOrDefault();
 
             if (Expenses == null)
             {
@@ -47,15 +46,15 @@ namespace MyBudget.WebUI.Pages.Expenses
                 return NotFound();
             }
 
-            Expenses = await _context.Expenses.FindAsync(id);
+            Expenses = await _repoWrapper.Expenses.Find(id.Value);
 
             if (Expenses != null)
             {
-                _context.Expenses.Remove(Expenses);
-                await _context.SaveChangesAsync();
+                _repoWrapper.Expenses.Delete(Expenses);
+                await _repoWrapper.SaveChanges();
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Index", new { Month = Expenses.MonthId, Year = Expenses.YearId });
         }
     }
 }

@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.IncomeSource
 {
     public class EditModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public EditModel(MyBudget.DAL.MyBudgetContext context)
+        public EditModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -29,7 +30,7 @@ namespace MyBudget.WebUI.Pages.IncomeSource
                 return NotFound();
             }
 
-            IncomeSources = await _context.IncomeSources.FirstOrDefaultAsync(m => m.IncomeSourcePk == id);
+            IncomeSources = (await _repoWrapper.IncomeSources.Get(m => m.IncomeSourcePk == id)).FirstOrDefault();
 
             if (IncomeSources == null)
             {
@@ -47,15 +48,15 @@ namespace MyBudget.WebUI.Pages.IncomeSource
                 return Page();
             }
 
-            _context.Attach(IncomeSources).State = EntityState.Modified;
+            _repoWrapper.IncomeSources.Update(IncomeSources);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repoWrapper.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!IncomeSourcesExists(IncomeSources.IncomeSourcePk))
+                if (!(await IncomeSourcesExists(IncomeSources.IncomeSourcePk)))
                 {
                     return NotFound();
                 }
@@ -68,9 +69,10 @@ namespace MyBudget.WebUI.Pages.IncomeSource
             return RedirectToPage("./Index");
         }
 
-        private bool IncomeSourcesExists(int id)
+        private async Task<bool> IncomeSourcesExists(int id)
         {
-            return _context.IncomeSources.Any(e => e.IncomeSourcePk == id);
+            return !(await _repoWrapper.IncomeSources.Find(id) == null);
         }
+
     }
 }

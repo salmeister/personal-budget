@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.LoanType
 {
     public class EditModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public EditModel(MyBudget.DAL.MyBudgetContext context)
+        public EditModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -29,7 +30,7 @@ namespace MyBudget.WebUI.Pages.LoanType
                 return NotFound();
             }
 
-            LoanTypes = await _context.LoanTypes.FirstOrDefaultAsync(m => m.LoanTypePk == id);
+            LoanTypes = (await _repoWrapper.LoanTypes.Get(m => m.LoanTypePk == id)).FirstOrDefault();
 
             if (LoanTypes == null)
             {
@@ -47,15 +48,15 @@ namespace MyBudget.WebUI.Pages.LoanType
                 return Page();
             }
 
-            _context.Attach(LoanTypes).State = EntityState.Modified;
+            _repoWrapper.LoanTypes.Update(LoanTypes);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repoWrapper.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!LoanTypesExists(LoanTypes.LoanTypePk))
+                if (!(await LoanTypesExists(LoanTypes.LoanTypePk)))
                 {
                     return NotFound();
                 }
@@ -68,9 +69,9 @@ namespace MyBudget.WebUI.Pages.LoanType
             return RedirectToPage("./Index");
         }
 
-        private bool LoanTypesExists(int id)
+        private async Task<bool> LoanTypesExists(int id)
         {
-            return _context.LoanTypes.Any(e => e.LoanTypePk == id);
+            return !(await _repoWrapper.LoanTypes.Find(id) == null);
         }
     }
 }

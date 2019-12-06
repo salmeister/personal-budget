@@ -1,14 +1,83 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Home";
 }
 
-    <div class="text-center">
-        <h1 class="display-4">Welcome</h1>
-        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<form method="post">
+    <table>
+        <tr>
+            <td>
+                <h2>Summary</h2>
+            </td>
+            <td style="width:25px"></td>
+            <td>
+                <select class="form-control" asp-for="Year" style="width:155px" asp-items="ViewBag.YearId"></select>
+            </td>
+            <td>
+                <input type="submit" value="Go" class="btn btn-primary" />
+            </td>
+        </tr>
+    </table>
+</form>
+<br />
 
-        <br />
-        <a asp-page="/Expenses/Index">Expenses</a>
-        <br />
-    </div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Summaries[0].Month)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Summaries[0].Expenses)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Summaries[0].Payments)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Summaries[0].Income)
+            </th>
+            <th>
+                @Html.DisplayName("Excess")
+            </th>
+            <th>
+                @Html.DisplayName("Excess %")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Summaries)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Month.MonthAbbr)
+                </td>
+                <td>
+                    <a asp-page="/Expenses/Index" asp-route-Month=@item.Month.MonthPk asp-route-year=@Model.Year>@Html.DisplayFor(modelItem => item.Expenses)</a>
+                </td>
+                <td>
+                    <a asp-page="/Payments/Index" asp-route-Month=@item.Month.MonthPk asp-route-year=@Model.Year>@Html.DisplayFor(modelItem => item.Payments)</a>
+                </td>
+                <td>
+                    <a asp-page="/Income/Index" asp-route-Month=@item.Month.MonthPk asp-route-year=@Model.Year>@Html.DisplayFor(modelItem => item.Income)</a>
+                </td>
+                <td>
+                    @string.Format("{0:c}", Math.Round(item.Income - (item.Expenses + item.Payments), 2))
+                </td>
+                <td>
+                    @string.Format("{0:P1}", (item.Income > 0) ? Math.Round((item.Income - (item.Expenses + item.Payments)) / item.Income, 3) : 0)
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>@Html.DisplayName("Totals:")</th>
+            <td>@string.Format("{0:c}", Model.Summaries.Sum(i => i.Expenses))</td>
+            <td>@string.Format("{0:c}", Model.Summaries.Sum(i => i.Payments))</td>
+            <td>@string.Format("{0:c}", Model.Summaries.Sum(i => i.Income))</td>
+            <td>@string.Format("{0:c}", Math.Round(Model.Summaries.Sum(i => i.Income) - (Model.Summaries.Sum(i => i.Expenses) + Model.Summaries.Sum(i => i.Payments)), 2))</td>
+            <td>@string.Format("{0:P1}", (Model.Summaries.Sum(i => i.Income) > 0) ? Math.Round((Model.Summaries.Sum(i => i.Income) - (Model.Summaries.Sum(i => i.Expenses) + Model.Summaries.Sum(i => i.Payments))) / Model.Summaries.Sum(i => i.Income), 3) : 0)</td>
+        </tr>
+    </tfoot>
+</table>

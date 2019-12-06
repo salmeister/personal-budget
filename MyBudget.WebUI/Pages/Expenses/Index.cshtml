@@ -2,62 +2,110 @@
 @model MyBudget.WebUI.Pages.Expenses.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Expenses";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
 
 
+<form method="post">
+    <div style="float:left">
+        <table>
+            <tr>
+                <td rowspan="2">
+                    <h2>Expenses</h2>
+                    <a asp-page="Create" asp-route-month=@Model.Month asp-route-year=@Model.Year>Create New</a>
+                </td>
+                <td rowspan="2" style="width:50px"></td>
+                <th>
+                    <label class="control-label">Month</label>
+                </th>
+                <th></th>
+                <th>
+                    <label class="control-label">Year</label>
+                </th>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control" asp-for="@Model.Month" style="width:155px" asp-items="ViewBag.MonthId"></select>
+                </td>
+                <td></td>
+                <td>
+                    <select class="form-control" asp-for="@Model.Year" style="width:155px" asp-items="ViewBag.YearId"></select>
+                </td>
+                <td></td>
+                <td>
+                    <input type="submit" value="Go" class="btn btn-primary" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Expenses[0].Amount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Expenses[0].DueDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Expenses[0].ExpenseType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Expenses[0].Month)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Expenses[0].Year)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Expenses) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ExpenseType.ExpenseType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Month.MonthAbbr)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Year.YearPk)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ExpensePk">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ExpensePk">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ExpensePk">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <div style="float:right">
+            <br />
+            <a asp-page="/Income/Index" asp-route-month=@Model.Month asp-route-year=@Model.Year>Income</a>
+            <br />
+            <a asp-page="/Payments/Index" asp-route-month=@Model.Month asp-route-year=@Model.Year>Payments</a>
+        </div>
+        <div style="clear:both"></div>
+        <br />
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Expenses[0].ExpenseType)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Expenses[0].Amount)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Expenses[0].DueDate)
+                    </th>
+                    @*<th>
+                        @Html.DisplayNameFor(model => model.Expenses[0].Month)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Expenses[0].Year)
+                    </th>*@
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Expenses)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ExpenseType.ExpenseType)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Amount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DueDate)
+                        </td>
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.Month.MonthAbbr)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Year.YearPk)
+                        </td>*@
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@item.ExpensePk">Edit</a> |
+                            @*<a asp-page="./Details" asp-route-id="@item.ExpensePk">Details</a> |*@
+                            <a asp-page="./Delete" asp-route-id="@item.ExpensePk">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @*<script>
+            document.addEventListener("DOMContentLoaded", function (event) {
+                var today = new Date();
+                $("#Month").val(String(today.getMonth() + 1)).change();
+                $("#Year").val(today.getFullYear()).change();
+            });
+        </script>*@

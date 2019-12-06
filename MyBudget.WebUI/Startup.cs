@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI
 {
@@ -28,6 +29,7 @@ namespace MyBudget.WebUI
             var connection = Configuration.GetConnectionString("MyBudget");
             services.AddDbContext<MyBudgetContext>(options => options.UseSqlServer(connection));
 
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 
             services.AddRazorPages();
         }

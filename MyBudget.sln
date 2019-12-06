@@ -5,9 +5,11 @@ VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBudget.WebUI", "MyBudget.WebUI\MyBudget.WebUI.csproj", "{32BDAE6C-0145-46EE-9442-804915891183}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBudget.DAL", "MyBudget.DAL\MyBudget.DAL.csproj", "{5278ED44-E8CD-4E57-92BF-62F9A64131D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBudget.DAL", "MyBudget.DAL\MyBudget.DAL.csproj", "{5278ED44-E8CD-4E57-92BF-62F9A64131D2}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "MyBudget.DB", "MyBudget.DB\MyBudget.DB.sqlproj", "{CD52E616-3E96-4EF4-AB09-C56DC05AD890}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBudget.Domain", "MyBudget.Domain\MyBudget.Domain.csproj", "{8CE394FC-102A-4645-9B71-35A620CE467F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{CD52E616-3E96-4EF4-AB09-C56DC05AD890}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD52E616-3E96-4EF4-AB09-C56DC05AD890}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD52E616-3E96-4EF4-AB09-C56DC05AD890}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{8CE394FC-102A-4645-9B71-35A620CE467F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CE394FC-102A-4645-9B71-35A620CE467F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CE394FC-102A-4645-9B71-35A620CE467F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CE394FC-102A-4645-9B71-35A620CE467F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

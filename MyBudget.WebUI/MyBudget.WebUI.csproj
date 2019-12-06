@@ -4,6 +4,13 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Pages\Months\**" />
+    <Content Remove="Pages\Months\**" />
+    <EmbeddedResource Remove="Pages\Months\**" />
+    <None Remove="Pages\Months\**" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.1" />
@@ -17,7 +24,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\MyBudget.DAL\MyBudget.DAL.csproj" />
+    <ProjectReference Include="..\MyBudget.Domain\MyBudget.Domain.csproj" />
   </ItemGroup>
 
 </Project>

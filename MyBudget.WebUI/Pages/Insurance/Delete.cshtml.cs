@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Insurance
 {
     public class DeleteModel : PageModel
     {
-        private readonly DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public DeleteModel(DAL.MyBudgetContext context)
+        public DeleteModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -27,11 +29,8 @@ namespace MyBudget.WebUI.Pages.Insurance
                 return NotFound();
             }
 
-            Insurance = await _context.Insurance
-                .Include(i => i.FamilyMember)
-                .Include(i => i.InsuranceType)
-                .Include(i => i.Property)
-                .Include(i => i.Vehicle).FirstOrDefaultAsync(m => m.InsurancePk == id);
+            var includes = new Expression<Func<DAL.Insurance, Object>>[] { x => x.FamilyMember, x => x.InsuranceType, x => x.Property, x => x.Vehicle };
+            Insurance = (await _repoWrapper.Insurance.Get(m => m.InsurancePk == id, includes)).FirstOrDefault();
 
             if (Insurance == null)
             {
@@ -47,12 +46,12 @@ namespace MyBudget.WebUI.Pages.Insurance
                 return NotFound();
             }
 
-            Insurance = await _context.Insurance.FindAsync(id);
+            Insurance = await _repoWrapper.Insurance.Find(id.Value);
 
             if (Insurance != null)
             {
-                _context.Insurance.Remove(Insurance);
-                await _context.SaveChangesAsync();
+                _repoWrapper.Insurance.Delete(Insurance);
+                await _repoWrapper.SaveChanges();
             }
 
             return RedirectToPage("./Index");

@@ -1,0 +1,72 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Payments.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete Payment";
+}
+
+<h1>Delete</h1>
+
+<div class="warning-msg">
+    This will permantly delete the record from the database. To maintain history, edit the record and update it to be inactive.
+</div>
+<div>
+    <h4>Payments</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Payments.Amount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Payments.Amount)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Payments.DueDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Payments.DueDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Payments.Insurance)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Payments.Insurance.InsuranceAlias)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Payments.Loan)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Payments.Loan.LoanAlias)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Payments.Month)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Payments.Month.MonthAbbr)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Payments.Tuition)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Payments.Tuition.TuitionAlias)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Payments.Vehicle)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Payments.Vehicle.VehiclePk)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Payments.Year)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Payments.Year.YearPk)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="Payments.PaymentPk" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="Index" asp-route-month=@Model.Payments.MonthId asp-route-year=@Model.Payments.YearId>Back to List</a>
+    </form>
+</div>

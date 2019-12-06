@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.ExpenseType
 {
     public class EditModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public EditModel(MyBudget.DAL.MyBudgetContext context)
+        public EditModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -29,7 +30,7 @@ namespace MyBudget.WebUI.Pages.ExpenseType
                 return NotFound();
             }
 
-            ExpenseTypes = await _context.ExpenseTypes.FirstOrDefaultAsync(m => m.ExpenseTypePk == id);
+            ExpenseTypes = (await _repoWrapper.ExpenseTypes.Get(m => m.ExpenseTypePk == id)).FirstOrDefault();
 
             if (ExpenseTypes == null)
             {
@@ -47,15 +48,15 @@ namespace MyBudget.WebUI.Pages.ExpenseType
                 return Page();
             }
 
-            _context.Attach(ExpenseTypes).State = EntityState.Modified;
+            _repoWrapper.ExpenseTypes.Update(ExpenseTypes);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repoWrapper.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ExpenseTypesExists(ExpenseTypes.ExpenseTypePk))
+                if (!(await ExpenseTypesExists(ExpenseTypes.ExpenseTypePk)))
                 {
                     return NotFound();
                 }
@@ -68,9 +69,9 @@ namespace MyBudget.WebUI.Pages.ExpenseType
             return RedirectToPage("./Index");
         }
 
-        private bool ExpenseTypesExists(int id)
+        private async Task<bool> ExpenseTypesExists(int id)
         {
-            return _context.ExpenseTypes.Any(e => e.ExpenseTypePk == id);
+            return !(await _repoWrapper.ExpenseTypes.Find(id) == null);
         }
     }
 }

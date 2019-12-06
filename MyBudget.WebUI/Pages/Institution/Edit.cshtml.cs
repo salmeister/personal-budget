@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Institution
 {
     public class EditModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public EditModel(MyBudget.DAL.MyBudgetContext context)
+        public EditModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -29,7 +30,7 @@ namespace MyBudget.WebUI.Pages.Institution
                 return NotFound();
             }
 
-            Institutions = await _context.Institutions.FirstOrDefaultAsync(m => m.InstitutionPk == id);
+            Institutions = (await _repoWrapper.Institutions.Get(m => m.InstitutionPk == id)).FirstOrDefault();
 
             if (Institutions == null)
             {
@@ -47,15 +48,15 @@ namespace MyBudget.WebUI.Pages.Institution
                 return Page();
             }
 
-            _context.Attach(Institutions).State = EntityState.Modified;
+            _repoWrapper.Institutions.Update(Institutions);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repoWrapper.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!InstitutionsExists(Institutions.InstitutionPk))
+                if (!(await InstitutionsExists(Institutions.InstitutionPk)))
                 {
                     return NotFound();
                 }
@@ -68,9 +69,10 @@ namespace MyBudget.WebUI.Pages.Institution
             return RedirectToPage("./Index");
         }
 
-        private bool InstitutionsExists(int id)
+        private async Task<bool> InstitutionsExists(int id)
         {
-            return _context.Institutions.Any(e => e.InstitutionPk == id);
+            return !(await _repoWrapper.Institutions.Find(id) == null);
         }
+
     }
 }

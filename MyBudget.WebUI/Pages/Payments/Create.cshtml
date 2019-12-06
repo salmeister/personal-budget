@@ -1,0 +1,71 @@
+﻿@page
+@model MyBudget.WebUI.Pages.Payments.CreateModel
+
+@{
+    ViewData["Title"] = "Create Payment";
+}
+
+<h1>Create</h1>
+
+<h4>Payments</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Payments.Year" class="control-label"></label>
+                <select asp-for="Payments.YearId" class ="form-control" asp-items="ViewBag.YearId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Payments.Month" class="control-label"></label>
+                <select asp-for="Payments.MonthId" class ="form-control" asp-items="ViewBag.MonthId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Payments.Loan" class="control-label"></label>
+                <select asp-for="Payments.LoanId" class="form-control" asp-items="ViewBag.LoanId">
+                    <option selected value=""></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Payments.Insurance" class="control-label"></label>
+                <select asp-for="Payments.InsuranceId" class="form-control" asp-items="ViewBag.InsuranceId">
+                    <option selected value=""></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Payments.Tuition" class="control-label"></label>
+                <select asp-for="Payments.TuitionId" class="form-control" asp-items="ViewBag.TuitionId">
+                    <option selected value=""></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Payments.Vehicle" class="control-label"></label>
+                <select asp-for="Payments.VehicleId" class="form-control" asp-items="ViewBag.VehicleId">
+                    <option selected value=""></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Payments.Amount" class="control-label"></label>
+                <input asp-for="Payments.Amount" class="form-control" />
+                <span asp-validation-for="Payments.Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Payments.DueDate" class="control-label"></label>
+                <input asp-for="Payments.DueDate" class="form-control" />
+                <span asp-validation-for="Payments.DueDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index" asp-route-month=@Model.Payments.MonthId asp-route-year=@Model.Payments.YearId>Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

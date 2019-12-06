@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.InsuranceType
 {
     public class EditModel : PageModel
     {
-        private readonly MyBudget.DAL.MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public EditModel(MyBudget.DAL.MyBudgetContext context)
+        public EditModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
         [BindProperty]
@@ -29,7 +30,7 @@ namespace MyBudget.WebUI.Pages.InsuranceType
                 return NotFound();
             }
 
-            InsuranceTypes = await _context.InsuranceTypes.FirstOrDefaultAsync(m => m.InsurTypePk == id);
+            InsuranceTypes = (await _repoWrapper.InsuranceTypes.Get(m => m.InsurTypePk == id)).FirstOrDefault();
 
             if (InsuranceTypes == null)
             {
@@ -47,15 +48,15 @@ namespace MyBudget.WebUI.Pages.InsuranceType
                 return Page();
             }
 
-            _context.Attach(InsuranceTypes).State = EntityState.Modified;
+            _repoWrapper.InsuranceTypes.Update(InsuranceTypes);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repoWrapper.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!InsuranceTypesExists(InsuranceTypes.InsurTypePk))
+                if (!(await InsuranceTypesExists(InsuranceTypes.InsurTypePk)))
                 {
                     return NotFound();
                 }
@@ -68,9 +69,9 @@ namespace MyBudget.WebUI.Pages.InsuranceType
             return RedirectToPage("./Index");
         }
 
-        private bool InsuranceTypesExists(int id)
+        private async Task<bool> InsuranceTypesExists(int id)
         {
-            return _context.InsuranceTypes.Any(e => e.InsurTypePk == id);
+            return !(await _repoWrapper.InsuranceTypes.Find(id) == null);
         }
     }
 }

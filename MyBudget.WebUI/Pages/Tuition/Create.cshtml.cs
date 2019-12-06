@@ -6,22 +6,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyBudget.DAL;
+using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Tuition
 {
     public class CreateModel : PageModel
     {
-        private readonly MyBudgetContext _context;
+        private readonly IRepositoryWrapper _repoWrapper;
 
-        public CreateModel(MyBudgetContext context)
+        public CreateModel(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
-        ViewData["FamilyMemberId"] = new SelectList(_context.FamilyMembers, "FamilyMemberPk", "FirstName");
-        ViewData["InstitutionId"] = new SelectList(_context.Institutions, "InstitutionPk", "InstitutionName");
+            ViewData["FamilyMemberId"] = new SelectList(await _repoWrapper.FamilyMembers.Get(s => s.Active), "FamilyMemberPk", "FirstName");
+            ViewData["InstitutionId"] = new SelectList(await _repoWrapper.Institutions.Get(s => s.Active), "InstitutionPk", "InstitutionName");
             return Page();
         }
 
@@ -37,8 +38,8 @@ namespace MyBudget.WebUI.Pages.Tuition
                 return Page();
             }
 
-            _context.Tuition.Add(Tuition);
-            await _context.SaveChangesAsync();
+            await _repoWrapper.Tuition.Add(Tuition);
+            await _repoWrapper.SaveChanges();
 
             return RedirectToPage("./Index");
         }
