@@ -36,7 +36,7 @@ namespace MyBudget.WebUI.Pages.LoanType
                 return Page();
             }
 
-            _repoWrapper.LoanTypes.Add(LoanTypes);
+            await _repoWrapper.LoanTypes.Add(LoanTypes);
             await _repoWrapper.SaveChanges();
 
             return RedirectToPage("./Index");
