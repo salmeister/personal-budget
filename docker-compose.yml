@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+	mybudget-db:
+		image: microsoft/mssql-server-linux:latest
+		environment:
+			ACCEPT_EULA: Y
+			SA_PASSWORD: Isleton5467
+		ports:
+			- "1433:1433"
+		volumes:
+			- type: volume
+				source: mybudget-data
+				target: /var/opt/mssql
+
+	mybudget-webui:
+		image: localhost:5000/mybudgetwebui:latest
+		ports:
+			- "8089:80"
+		depends_on:
+			- mybudget-db
+volumes:
+	mybudget-data:
