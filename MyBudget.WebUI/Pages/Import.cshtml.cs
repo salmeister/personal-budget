@@ -47,6 +47,9 @@ namespace MyBudget.WebUI.Pages
 
         public async Task<IActionResult> OnPostAsync(int Month, int Year, bool Preview)
         {
+            ViewData["MonthId"] = new SelectList(_repoWrapper.Months.GetAll().Result, "MonthPk", "MonthAbbr");
+            ViewData["YearId"] = new SelectList(_repoWrapper.Years.GetAll().Result.Where(y => y.YearPk >= DateTime.Now.AddYears(-1).Year && y.YearPk <= DateTime.Now.Year), "YearPk", "YearPk");
+
             CleanImportDir();
             //Checking File
             var checkingFile = Path.Combine(_environment.ContentRootPath, importFolder, CheckingFile.FileName);
