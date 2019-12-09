@@ -337,3 +337,4 @@ ASALocalRun/
 .mfractor/
 /MyBudget.DAL/OldBudget
 /MyBudget.Domain/Migrations
+/MyBudget.DB/Snapshots
