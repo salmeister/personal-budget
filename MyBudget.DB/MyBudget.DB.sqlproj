@@ -87,7 +87,6 @@
     <None Include="Snapshots\MyBudget_SeedData.dacpac" />
     <None Include="Snapshots\MyBudget_MigratedAllData.dacpac" />
     <None Include="dbo\Data\MigratedData.sql" />
-    <None Include="Snapshots\MyBudget.DB_201911.dacpac" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="dbo\Data\Script.PostDeployment.sql" />

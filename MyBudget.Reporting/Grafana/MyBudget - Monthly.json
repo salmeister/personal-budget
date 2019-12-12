@@ -1,0 +1,1052 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 6,
+  "iteration": 1576170804902,
+  "links": [],
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "MyBudget",
+      "fill": 2,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "Total",
+          "dashes": true,
+          "lines": false,
+          "points": true
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "SELECT\n  DATEFROMPARTS ( year_id, month_id, 1 ) as time,\n  SUM(amount) as value,\n  'Total' as metric\nFROM\n  income\nWHERE\n  DATEFROMPARTS ( year_id, month_id, 1 ) BETWEEN $__timeFrom() AND $__timeTo()\nGROUP BY \n  month_id,\n  DATEFROMPARTS ( year_id, month_id, 1 )\nORDER BY\n  time ASC",
+          "refId": "A"
+        },
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "SELECT\n  DATEFROMPARTS ( year_id, month_id, 1 ) as time,\n  SUM(amount) as value,\n  'Andy' as metric\nFROM\n  income\nWHERE\n  family_member_id = 3 AND DATEFROMPARTS ( year_id, month_id, 1 ) BETWEEN $__timeFrom() AND $__timeTo()\nGROUP BY \n  family_member_id,\n  DATEFROMPARTS ( year_id, month_id, 1 )\nORDER BY\n  time ASC",
+          "refId": "C"
+        },
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "SELECT\n  DATEFROMPARTS ( year_id, month_id, 1 ) as time,\n  SUM(amount) as value,\n  'Katie' as metric\nFROM\n  income\nWHERE\n  family_member_id = 4 AND DATEFROMPARTS ( year_id, month_id, 1 ) BETWEEN $__timeFrom() AND $__timeTo()\nGROUP BY \n  family_member_id,\n  DATEFROMPARTS ( year_id, month_id, 1 )\nORDER BY\n  time ASC",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Income",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 0,
+          "format": "currencyUSD",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "MyBudget",
+      "fill": 2,
+      "fillGradient": 8,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 3,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "SELECT\n  DATEFROMPARTS ( year_id, month_id, 1 ) as time,\n  SUM(amount) as value,\n  'Expenses' as metric\nFROM\n  expenses\nWHERE\n  DATEFROMPARTS ( year_id, month_id, 1 ) BETWEEN $__timeFrom() AND $__timeTo()\nGROUP BY \n  month_id,\n  DATEFROMPARTS ( year_id, month_id, 1 )\nORDER BY\n  time ASC",
+          "refId": "A"
+        },
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "SELECT\n  DATEFROMPARTS ( year_id, month_id, 1 ) as time,\n  SUM(amount) as value,\n  'Payments' as metric\nFROM\n  payments\nWHERE\n  DATEFROMPARTS ( year_id, month_id, 1 ) BETWEEN $__timeFrom() AND $__timeTo()\nGROUP BY \n  month_id,\n  DATEFROMPARTS ( year_id, month_id, 1 )\nORDER BY\n  time ASC",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Expenses",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "currencyUSD",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "MyBudget",
+      "fill": 0,
+      "fillGradient": 8,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "hiddenSeries": false,
+      "id": 8,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "SELECT DATEFROMPARTS ( year_id, month_id, 1 ) as time,\r\n       SUM(income) - (SUM(expenses) + SUM(payments)) AS Excess\r\nFROM     dbo.View_Totals\r\nWHERE\r\n  DATEFROMPARTS ( year_id, month_id, 1 ) BETWEEN $__timeFrom() AND $__timeTo()\r\nGROUP BY \r\n  month_id,\r\n  DATEFROMPARTS ( year_id, month_id, 1 )\r\nORDER BY\r\n  time ASC",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Excess",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "currencyUSD",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "MyBudget",
+      "decimals": 2,
+      "fill": 0,
+      "fillGradient": 8,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 27
+      },
+      "hiddenSeries": false,
+      "id": 9,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "SELECT DATEFROMPARTS ( year_id, month_id, 1 ) as time,\r\n       (SUM(income) - (SUM(expenses) + SUM(payments))) / SUM(income) AS Excess\r\nFROM     dbo.View_Totals\r\nWHERE\r\n  DATEFROMPARTS ( year_id, month_id, 1 ) BETWEEN $__timeFrom() AND $__timeTo()\r\nGROUP BY \r\n  month_id,\r\n  DATEFROMPARTS ( year_id, month_id, 1 )\r\nORDER BY\r\n  time ASC",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Excess Percentage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 2,
+          "format": "percentunit",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "MyBudget",
+      "fill": 2,
+      "fillGradient": 8,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "hiddenSeries": false,
+      "id": 5,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "repeat": "expense_type",
+      "repeatDirection": "h",
+      "scopedVars": {
+        "expense_type": {
+          "selected": true,
+          "text": "Gasoline",
+          "value": "Gasoline"
+        }
+      },
+      "seriesOverrides": [
+        {
+          "alias": "gasoline",
+          "color": "#C4162A"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "SELECT\n  DATEFROMPARTS ( e.year_id, e.month_id, 1 ) as time,\n  SUM(e.amount) as value,\n  '$expense_type' as metric\nFROM\n  dbo.expenses e \n   INNER JOIN \n      dbo.expense_types t \n      ON e.expense_type_id = t.expense_type_pk \nWHERE\n  t.expense_type LIKE '$expense_type' AND DATEFROMPARTS ( e.year_id, e.month_id, 1 ) BETWEEN $__timeFrom() AND $__timeTo()\nGROUP BY \n  e.month_id,\n  DATEFROMPARTS ( e.year_id, e.month_id, 1 )\nORDER BY\n  time ASC",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Expenses by Type",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "currencyUSD",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "MyBudget",
+      "fill": 2,
+      "fillGradient": 8,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 45
+      },
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "gasoline",
+          "color": "#C4162A"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "SELECT\n  DATEFROMPARTS ( p.year_id, p.month_id, 1 ) as time,\n  SUM(p.amount) as value,\n  '$loan' as metric\nFROM\n  dbo.payments p\n   INNER JOIN \n      dbo.loans l\n      ON p.loan_id = l.loan_pk \nWHERE\n  l.loan_alias LIKE '$loan' AND DATEFROMPARTS ( p.year_id, p.month_id, 1 ) BETWEEN $__timeFrom() AND $__timeTo()\nGROUP BY \n  p.month_id,\n  DATEFROMPARTS ( p.year_id, p.month_id, 1 )\nORDER BY\n  time ASC",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Payments by Loan",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "currencyUSD",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "MyBudget",
+      "fill": 2,
+      "fillGradient": 8,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 54
+      },
+      "hiddenSeries": false,
+      "id": 7,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "SELECT\n  DATEFROMPARTS ( p.year_id, p.month_id, 1 ) as time,\n  SUM(p.amount) as value,\n  '$tuition' as metric\nFROM\n  dbo.payments p\n   INNER JOIN \n      dbo.tuition t\n      ON p.tuition_id = t.tuition_pk \nWHERE\n  t.tuition_alias LIKE '$tuition' AND DATEFROMPARTS ( p.year_id, p.month_id, 1 ) BETWEEN $__timeFrom() AND $__timeTo()\nGROUP BY \n  p.month_id,\n  DATEFROMPARTS ( p.year_id, p.month_id, 1 )\nORDER BY\n  time ASC",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Payments by Tuition",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "currencyUSD",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 21,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "text": "Gasoline",
+          "value": "Gasoline"
+        },
+        "datasource": "MyBudget",
+        "definition": "SELECT expense_type FROM dbo.expense_types",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Expense Type",
+        "multi": false,
+        "name": "expense_type",
+        "options": [
+          {
+            "selected": true,
+            "text": "Gasoline",
+            "value": "Gasoline"
+          },
+          {
+            "selected": false,
+            "text": "Electrical",
+            "value": "Electrical"
+          },
+          {
+            "selected": false,
+            "text": "Water",
+            "value": "Water"
+          },
+          {
+            "selected": false,
+            "text": "Garbage",
+            "value": "Garbage"
+          },
+          {
+            "selected": false,
+            "text": "Gym",
+            "value": "Gym"
+          },
+          {
+            "selected": false,
+            "text": "Healthcare",
+            "value": "Healthcare"
+          },
+          {
+            "selected": false,
+            "text": "Household Goods",
+            "value": "Household Goods"
+          },
+          {
+            "selected": false,
+            "text": "Home Improvements",
+            "value": "Home Improvements"
+          },
+          {
+            "selected": false,
+            "text": "Daycare",
+            "value": "Daycare"
+          },
+          {
+            "selected": false,
+            "text": "Natural Gas",
+            "value": "Natural Gas"
+          },
+          {
+            "selected": false,
+            "text": "Cell Phone",
+            "value": "Cell Phone"
+          },
+          {
+            "selected": false,
+            "text": "Home Phone",
+            "value": "Home Phone"
+          },
+          {
+            "selected": false,
+            "text": "Cable TV",
+            "value": "Cable TV"
+          },
+          {
+            "selected": false,
+            "text": "Internet",
+            "value": "Internet"
+          },
+          {
+            "selected": false,
+            "text": "Groceries",
+            "value": "Groceries"
+          },
+          {
+            "selected": false,
+            "text": "Auto Care",
+            "value": "Auto Care"
+          }
+        ],
+        "query": "SELECT expense_type FROM dbo.expense_types",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "tags": [],
+          "text": "Louisiana Ave",
+          "value": "Louisiana Ave"
+        },
+        "datasource": "MyBudget",
+        "definition": "SELECT loan_alias FROM dbo.loans",
+        "hide": 0,
+        "includeAll": false,
+        "label": "loan",
+        "multi": false,
+        "name": "loan",
+        "options": [
+          {
+            "selected": false,
+            "text": "Wilson Ave",
+            "value": "Wilson Ave"
+          },
+          {
+            "selected": false,
+            "text": "Wilson Ave 2nd",
+            "value": "Wilson Ave 2nd"
+          },
+          {
+            "selected": false,
+            "text": "Grand Am",
+            "value": "Grand Am"
+          },
+          {
+            "selected": false,
+            "text": "Lowell Dr",
+            "value": "Lowell Dr"
+          },
+          {
+            "selected": false,
+            "text": "Torrent",
+            "value": "Torrent"
+          },
+          {
+            "selected": false,
+            "text": "Katie-Augie",
+            "value": "Katie-Augie"
+          },
+          {
+            "selected": false,
+            "text": "Katie-Clarion",
+            "value": "Katie-Clarion"
+          },
+          {
+            "selected": true,
+            "text": "Louisiana Ave",
+            "value": "Louisiana Ave"
+          },
+          {
+            "selected": false,
+            "text": "Caravan",
+            "value": "Caravan"
+          },
+          {
+            "selected": false,
+            "text": "Ram",
+            "value": "Ram"
+          }
+        ],
+        "query": "SELECT loan_alias FROM dbo.loans",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "tags": [],
+          "text": "Andy-Life",
+          "value": "Andy-Life"
+        },
+        "datasource": "MyBudget",
+        "definition": "SELECT insurance_alias FROM dbo.insurance",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Insurance",
+        "multi": false,
+        "name": "insurance",
+        "options": [
+          {
+            "selected": true,
+            "text": "Andy-Life",
+            "value": "Andy-Life"
+          },
+          {
+            "selected": false,
+            "text": "Katie-Life",
+            "value": "Katie-Life"
+          },
+          {
+            "selected": false,
+            "text": "LHS",
+            "value": "LHS"
+          },
+          {
+            "selected": false,
+            "text": "Grand Am",
+            "value": "Grand Am"
+          },
+          {
+            "selected": false,
+            "text": "Torrent",
+            "value": "Torrent"
+          },
+          {
+            "selected": false,
+            "text": "Uplander",
+            "value": "Uplander"
+          },
+          {
+            "selected": false,
+            "text": "Caravan",
+            "value": "Caravan"
+          },
+          {
+            "selected": false,
+            "text": "Umbrella",
+            "value": "Umbrella"
+          },
+          {
+            "selected": false,
+            "text": "Ram",
+            "value": "Ram"
+          }
+        ],
+        "query": "SELECT insurance_alias FROM dbo.insurance",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "tags": [],
+          "text": "Katie - MSU",
+          "value": "Katie - MSU"
+        },
+        "datasource": "MyBudget",
+        "definition": "SELECT tuition_alias FROM dbo.tuition",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Tuition",
+        "multi": false,
+        "name": "tuition",
+        "options": [
+          {
+            "selected": false,
+            "text": "Karlee - Grace",
+            "value": "Karlee - Grace"
+          },
+          {
+            "selected": false,
+            "text": "Katie - Clarion",
+            "value": "Katie - Clarion"
+          },
+          {
+            "selected": false,
+            "text": "Cam - Grace",
+            "value": "Cam - Grace"
+          },
+          {
+            "selected": false,
+            "text": "Maggie - Grace",
+            "value": "Maggie - Grace"
+          },
+          {
+            "selected": false,
+            "text": "Cam - Kinder",
+            "value": "Cam - Kinder"
+          },
+          {
+            "selected": true,
+            "text": "Katie - MSU",
+            "value": "Katie - MSU"
+          }
+        ],
+        "query": "SELECT tuition_alias FROM dbo.tuition",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1y",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "MyBudget - Monthly",
+  "uid": "-iwyKCaZz",
+  "version": 37
+}
