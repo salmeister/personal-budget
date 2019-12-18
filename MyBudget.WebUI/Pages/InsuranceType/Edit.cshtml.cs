@@ -7,17 +7,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.InsuranceType
 {
     public class EditModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public EditModel(IRepositoryWrapper repoWrapper)
+        public EditModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -30,7 +29,7 @@ namespace MyBudget.WebUI.Pages.InsuranceType
                 return NotFound();
             }
 
-            InsuranceTypes = (await _repoWrapper.InsuranceTypes.Get(m => m.InsurTypePk == id)).FirstOrDefault();
+            InsuranceTypes = await _context.InsuranceTypes.FirstOrDefaultAsync(m => m.InsurTypePk == id);
 
             if (InsuranceTypes == null)
             {
@@ -48,15 +47,15 @@ namespace MyBudget.WebUI.Pages.InsuranceType
                 return Page();
             }
 
-            _repoWrapper.InsuranceTypes.Update(InsuranceTypes);
+            _context.Attach(InsuranceTypes).State = EntityState.Modified;
 
             try
             {
-                await _repoWrapper.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!(await InsuranceTypesExists(InsuranceTypes.InsurTypePk)))
+                if (!InsuranceTypesExists(InsuranceTypes.InsurTypePk))
                 {
                     return NotFound();
                 }
@@ -69,9 +68,9 @@ namespace MyBudget.WebUI.Pages.InsuranceType
             return RedirectToPage("./Index");
         }
 
-        private async Task<bool> InsuranceTypesExists(int id)
+        private bool InsuranceTypesExists(int id)
         {
-            return !(await _repoWrapper.InsuranceTypes.Find(id) == null);
+            return _context.InsuranceTypes.Any(e => e.InsurTypePk == id);
         }
     }
 }

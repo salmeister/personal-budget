@@ -6,24 +6,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.IncomeSource
 {
     public class IndexModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public IndexModel(IRepositoryWrapper repoWrapper)
+        public IndexModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         public IList<IncomeSources> IncomeSources { get;set; }
 
         public async Task OnGetAsync()
         {
-            IncomeSources = await _repoWrapper.IncomeSources.GetAll();
+            IncomeSources = await _context.IncomeSources.ToListAsync();
         }
     }
 }

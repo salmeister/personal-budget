@@ -7,17 +7,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.LoanType
 {
     public class EditModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public EditModel(IRepositoryWrapper repoWrapper)
+        public EditModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -30,7 +29,7 @@ namespace MyBudget.WebUI.Pages.LoanType
                 return NotFound();
             }
 
-            LoanTypes = (await _repoWrapper.LoanTypes.Get(m => m.LoanTypePk == id)).FirstOrDefault();
+            LoanTypes = await _context.LoanTypes.FirstOrDefaultAsync(m => m.LoanTypePk == id);
 
             if (LoanTypes == null)
             {
@@ -48,15 +47,15 @@ namespace MyBudget.WebUI.Pages.LoanType
                 return Page();
             }
 
-            _repoWrapper.LoanTypes.Update(LoanTypes);
+            _context.Attach(LoanTypes).State = EntityState.Modified;
 
             try
             {
-                await _repoWrapper.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!(await LoanTypesExists(LoanTypes.LoanTypePk)))
+                if (!LoanTypesExists(LoanTypes.LoanTypePk))
                 {
                     return NotFound();
                 }
@@ -69,9 +68,9 @@ namespace MyBudget.WebUI.Pages.LoanType
             return RedirectToPage("./Index");
         }
 
-        private async Task<bool> LoanTypesExists(int id)
+        private bool LoanTypesExists(int id)
         {
-            return !(await _repoWrapper.LoanTypes.Find(id) == null);
+            return _context.LoanTypes.Any(e => e.LoanTypePk == id);
         }
     }
 }

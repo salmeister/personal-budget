@@ -6,17 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.LoanType
 {
     public class DeleteModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public DeleteModel(IRepositoryWrapper repoWrapper)
+        public DeleteModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -29,7 +28,7 @@ namespace MyBudget.WebUI.Pages.LoanType
                 return NotFound();
             }
 
-            LoanTypes = (await _repoWrapper.LoanTypes.Get(m => m.LoanTypePk == id)).FirstOrDefault();
+            LoanTypes = await _context.LoanTypes.FirstOrDefaultAsync(m => m.LoanTypePk == id);
 
             if (LoanTypes == null)
             {
@@ -45,12 +44,12 @@ namespace MyBudget.WebUI.Pages.LoanType
                 return NotFound();
             }
 
-            LoanTypes = await _repoWrapper.LoanTypes.Find(id.Value);
+            LoanTypes = await _context.LoanTypes.FindAsync(id);
 
             if (LoanTypes != null)
             {
-                _repoWrapper.LoanTypes.Delete(LoanTypes);
-                await _repoWrapper.SaveChanges();
+                _context.LoanTypes.Remove(LoanTypes);
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");

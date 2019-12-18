@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Income
 {
     public class EditModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public EditModel(IRepositoryWrapper repoWrapper)
+        public EditModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -31,17 +29,20 @@ namespace MyBudget.WebUI.Pages.Income
                 return NotFound();
             }
 
-            var includes = new Expression<Func<DAL.Income, Object>>[] { x => x.FamilyMember, x => x.IncomeSource };
-            Income = (await _repoWrapper.Income.Get(m => m.IncomePk == id, includes)).FirstOrDefault();
+            Income = await _context.Income
+                .Include(i => i.FamilyMember)
+                .Include(i => i.IncomeSource)
+                .Include(i => i.Month)
+                .Include(i => i.Year).FirstOrDefaultAsync(m => m.IncomePk == id);
 
             if (Income == null)
             {
                 return NotFound();
             }
-            ViewData["FamilyMemberId"] = new SelectList(await _repoWrapper.FamilyMembers.GetAll(), "FamilyMemberPk", "FirstName");
-            ViewData["IncomeSourceId"] = new SelectList(await _repoWrapper.IncomeSources.GetAll(), "IncomeSourcePk", "IncomeSourceAcro");
-            ViewData["MonthId"] = new SelectList(await _repoWrapper.Months.GetAll(), "MonthPk", "MonthAbbr");
-            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.GetAll(), "YearPk", "YearPk");
+           ViewData["FamilyMemberId"] = new SelectList(_context.FamilyMembers, "FamilyMemberPk", "FirstName");
+           ViewData["IncomeSourceId"] = new SelectList(_context.IncomeSources, "IncomeSourcePk", "IncomeSourceAcro");
+           ViewData["MonthId"] = new SelectList(_context.Months, "MonthPk", "MonthAbbr");
+           ViewData["YearId"] = new SelectList(_context.Years, "YearPk", "YearPk");
             return Page();
         }
 
@@ -54,15 +55,15 @@ namespace MyBudget.WebUI.Pages.Income
                 return Page();
             }
 
-            _repoWrapper.Income.Update(Income);
+            _context.Attach(Income).State = EntityState.Modified;
 
             try
             {
-                await _repoWrapper.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!(await IncomeExists(Income.IncomePk)))
+                if (!IncomeExists(Income.IncomePk))
                 {
                     return NotFound();
                 }
@@ -75,10 +76,9 @@ namespace MyBudget.WebUI.Pages.Income
             return RedirectToPage("./Index", new { Month = Income.MonthId, Year = Income.YearId });
         }
 
-        private async Task<bool> IncomeExists(int id)
+        private bool IncomeExists(int id)
         {
-            return !(await _repoWrapper.Income.Find(id) == null);
+            return _context.Income.Any(e => e.IncomePk == id);
         }
-
     }
 }

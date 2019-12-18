@@ -11,7 +11,7 @@
     This will permantly delete the record from the database. To maintain history, edit the record and update it to be inactive.
 </div>
 <div>
-    <h4>Institutions</h4>
+    <h4>Institution</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -57,7 +57,7 @@
             @Html.DisplayFor(model => model.Institutions.Active)
         </dd>
     </dl>
-
+    
     <form method="post">
         <input type="hidden" asp-for="Institutions.InstitutionPk" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |

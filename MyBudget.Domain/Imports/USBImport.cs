@@ -6,7 +6,6 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.Domain.Imports
 {
@@ -16,7 +15,7 @@ namespace MyBudget.Domain.Imports
         private readonly int _year;
         private readonly string _checkingFile;
         private readonly string _creditFile;
-        static IRepositoryWrapper _repoWrapper;
+        private readonly MyBudgetContext _context;
 
         ///////////////////
         //Globals
@@ -36,22 +35,23 @@ namespace MyBudget.Domain.Imports
         private decimal garbage = 0;
         private decimal car_ins1 = 0;
         private decimal car_ins2 = 0;
+        private decimal boat_ins = 0;
         private decimal umbrella_ins = 0;
         private decimal katie_life_ins = 0;
         private decimal andy_life_ins = 0;
         private Dictionary<DateTime, decimal> usb = new Dictionary<DateTime, decimal>();
         private Dictionary<DateTime, decimal> bes = new Dictionary<DateTime, decimal>();
 
-        public USBImport(IRepositoryWrapper repoWrapper, int month, int year, string checkingFile, string creditFile)
+        public USBImport(MyBudgetContext context, int month, int year, string checkingFile, string creditFile)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
             _month = month;
             _year = year;
             _checkingFile = checkingFile;
             _creditFile = creditFile;
         }
 
-        public async Task<string> Import(bool preview)
+        public string Import(bool preview)
         {
             ProcessCredit();
             ProcessChecking();
@@ -62,9 +62,9 @@ namespace MyBudget.Domain.Imports
             }
             else
             {
-                await AddExpenses();
-                await AddPayments();
-                await AddIcome();
+                AddExpenses();
+                AddPayments();
+                AddIcome();
 
                 return $"<p>{_month.ToString()}-{_year.ToString()} imported.</p>";
             }
@@ -92,6 +92,10 @@ namespace MyBudget.Domain.Imports
                 sb.Append("<tr><td>Car insurance 1</td><td>" + car_ins1 + "</td></tr>");
                 sb.Append("<tr><td>Car insurance 2</td><td>" + car_ins2 + "</td></tr>");
             }
+            if (boat_ins > 0)
+            {
+                sb.Append("<tr><td>Boat insurance 1</td><td>" + boat_ins + "</td></tr>");
+            }
             if (umbrella_ins > 0)
             {
                 sb.Append("<tr><td>Umbrella insurance</td><td>" + umbrella_ins + "</td></tr>");
@@ -116,10 +120,10 @@ namespace MyBudget.Domain.Imports
             return sb.ToString();
         }
 
-        private async Task AddIcome()
+        private void AddIcome()
         {
-            var incomeSources = _repoWrapper.IncomeSources.GetAll().Result;
-            var familyMembers = _repoWrapper.FamilyMembers.GetAll().Result;
+            var incomeSources = _context.IncomeSources;
+            var familyMembers = _context.FamilyMembers;
 
 
             if (usb.Count > 0)
@@ -130,7 +134,7 @@ namespace MyBudget.Domain.Imports
                 {
                     var incomeSource = incomeSources.Where(i => i.IncomeSourceAcro.ToUpper() == "USB").FirstOrDefault();
                     var familyMember = familyMembers.Where(f => f.FirstName.ToUpper() == "ANDY").FirstOrDefault();
-                    await _repoWrapper.Income.Add(new Income() { Amount = usbPaycheck.Value, ReceivedDate = usbPaycheck.Key, FamilyMemberId = familyMember.FamilyMemberPk, IncomeSourceId = incomeSource.IncomeSourcePk, MonthId = _month, YearId = _year });
+                    _context.Income.Add(new Income() { Amount = usbPaycheck.Value, ReceivedDate = usbPaycheck.Key, FamilyMemberId = familyMember.FamilyMemberPk, IncomeSourceId = incomeSource.IncomeSourcePk, MonthId = _month, YearId = _year });
                 }
             }
 
@@ -142,114 +146,119 @@ namespace MyBudget.Domain.Imports
                 {
                     var incomeSource = incomeSources.Where(i => i.IncomeSourceAcro.ToUpper() == "BES").FirstOrDefault();
                     var familyMember = familyMembers.Where(f => f.FirstName.ToUpper() == "KATIE").FirstOrDefault();
-                    await _repoWrapper.Income.Add(new Income() { Amount = besPaycheck.Value, ReceivedDate = besPaycheck.Key, FamilyMemberId = familyMember.FamilyMemberPk, IncomeSourceId = incomeSource.IncomeSourcePk, MonthId = _month, YearId = _year });
+                    _context.Income.Add(new Income() { Amount = besPaycheck.Value, ReceivedDate = besPaycheck.Key, FamilyMemberId = familyMember.FamilyMemberPk, IncomeSourceId = incomeSource.IncomeSourcePk, MonthId = _month, YearId = _year });
                 }
             }
         }
 
-        private async Task AddPayments()
+        private void AddPayments()
         {
-            var loans = _repoWrapper.Loans.GetAll().Result;
-            var insurance = _repoWrapper.Insurance.GetAll().Result;
+            var loans = _context.Loans;
+            var insurance = _context.Insurance;
 
             if (mortgage > 0)
             {
                 var loan = loans.Where(l => l.LoanAlias.ToUpper() == "LOUISIANA AVE").FirstOrDefault();
-                await _repoWrapper.Payments.Add(new Payments() { Amount = mortgage, LoanId = loan.LoanPk, MonthId = _month, YearId = _year });
+                _context.Payments.Add(new Payments() { Amount = mortgage, LoanId = loan.LoanPk, MonthId = _month, YearId = _year });
             }
             if (umbrella_ins > 0)
             {
                 var insur = insurance.Where(i => i.InsuranceAlias.ToUpper() == "UMBRELLA").FirstOrDefault();
-                await _repoWrapper.Payments.Add(new Payments() { Amount = umbrella_ins, InsuranceId = insur.InsurancePk, MonthId = _month, YearId = _year });
+                _context.Payments.Add(new Payments() { Amount = umbrella_ins, InsuranceId = insur.InsurancePk, MonthId = _month, YearId = _year });
             }
             if (car_ins1 > 0)
             {
                 var insur = insurance.Where(i => i.InsuranceAlias.ToUpper() == "CARAVAN").FirstOrDefault();
-                await _repoWrapper.Payments.Add(new Payments() { Amount = car_ins1, InsuranceId = insur.InsurancePk, MonthId = _month, YearId = _year });
+                _context.Payments.Add(new Payments() { Amount = car_ins1, InsuranceId = insur.InsurancePk, MonthId = _month, YearId = _year });
             }
             if (car_ins2 > 0)
             {
                 var insur = insurance.Where(i => i.InsuranceAlias.ToUpper() == "RAM").FirstOrDefault();
-                await _repoWrapper.Payments.Add(new Payments() { Amount = car_ins2, InsuranceId = insur.InsurancePk, MonthId = _month, YearId = _year });
+                _context.Payments.Add(new Payments() { Amount = car_ins2, InsuranceId = insur.InsurancePk, MonthId = _month, YearId = _year });
+            }
+            if (boat_ins > 0)
+            {
+                var insur = insurance.Where(i => i.InsuranceAlias.ToUpper() == "BOAT").FirstOrDefault();
+                _context.Payments.Add(new Payments() { Amount = boat_ins, InsuranceId = insur.InsurancePk, MonthId = _month, YearId = _year });
             }
             if (katie_life_ins > 0)
             {
                 var insur = insurance.Where(i => i.InsuranceAlias.ToUpper() == "KATIE-LIFE").FirstOrDefault();
-                await _repoWrapper.Payments.Add(new Payments() { Amount = katie_life_ins, InsuranceId = insur.InsurancePk, MonthId = _month, YearId = _year });
+                _context.Payments.Add(new Payments() { Amount = katie_life_ins, InsuranceId = insur.InsurancePk, MonthId = _month, YearId = _year });
             }
             if (andy_life_ins > 0)
             {
                 var insur = insurance.Where(i => i.InsuranceAlias.ToUpper() == "ANDY-LIFE").FirstOrDefault();
-                await _repoWrapper.Payments.Add(new Payments() { Amount = andy_life_ins, InsuranceId = insur.InsurancePk, MonthId = _month, YearId = _year });
+                _context.Payments.Add(new Payments() { Amount = andy_life_ins, InsuranceId = insur.InsurancePk, MonthId = _month, YearId = _year });
             }
         }
 
-        private async Task AddExpenses()
+        private void AddExpenses()
         {
-            var expenseTypes = _repoWrapper.ExpenseTypes.GetAll().Result;
+            var expenseTypes = _context.ExpenseTypes;
 
             if (gasoline > 0)
             {
                 var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "GASOLINE").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = gasoline, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                _context.Expenses.Add(new Expenses() { Amount = gasoline, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
 
             if (household_goods > 0)
             {
                 var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "HOUSEHOLD GOODS").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = household_goods, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                _context.Expenses.Add(new Expenses() { Amount = household_goods, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
             if (groceries > 0)
             {
                 var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "GROCERIES").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = groceries, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                _context.Expenses.Add(new Expenses() { Amount = groceries, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
 
             if (home_improvements > 0)
             {
                 var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "HOME IMPROVEMENTS").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = home_improvements, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                _context.Expenses.Add(new Expenses() { Amount = home_improvements, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
 
             if (gym_member > 0)
             {
                 var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "GYM").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = gym_member, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                _context.Expenses.Add(new Expenses() { Amount = gym_member, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
             if (cell > 0)
             {
                 var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "CELL PHONE").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = cell, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                _context.Expenses.Add(new Expenses() { Amount = cell, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
             if (cable_internet > 0)
             {
                 var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "INTERNET").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = cable_internet, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                _context.Expenses.Add(new Expenses() { Amount = cable_internet, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
             if (gas > 0)
             {
                 var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "NATURAL GAS").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = gas, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                _context.Expenses.Add(new Expenses() { Amount = gas, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
             if (electric > 0)
             {
                 var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "ELECTRICAL").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = electric, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                _context.Expenses.Add(new Expenses() { Amount = electric, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
             if (water > 0)
             {
                 var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "WATER").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = water, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                _context.Expenses.Add(new Expenses() { Amount = water, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
             if (garbage > 0)
             {
-                var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "GARBAGE  ").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = garbage, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "GARBAGE").FirstOrDefault();
+                _context.Expenses.Add(new Expenses() { Amount = garbage, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
             if (auto_care > 0)
             {
                 var type = expenseTypes.Where(e => e.ExpenseType.ToUpper() == "AUTO CARE").FirstOrDefault();
-                await _repoWrapper.Expenses.Add(new Expenses() { Amount = auto_care, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
+                _context.Expenses.Add(new Expenses() { Amount = auto_care, ExpenseTypeId = type.ExpenseTypePk, MonthId = _month, YearId = _year });
             }
         }
 
@@ -292,44 +301,55 @@ namespace MyBudget.Domain.Imports
 
                         if (_month == month && _year == year)
                         {
-                            if ((memo.Contains("US BANK HOME MTG")))
+                            if (_context.ImportDescriptions.Where(d => d.LoanId == 8).Select(d => d.Description.ToUpper()).Any(s => memo.Contains(s)))
                             {
                                 mortgage += amount;
                             }
-                            if (desc.Contains(" MEDIACOM") || desc.Contains(" CHARTER COMM"))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 14).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 cable_internet += amount;
                             }
-                            if ((desc.Contains("ELECTRONIC DEPOSIT US BANK NAT")))
+                            if (_context.ImportDescriptions.Where(d => d.IncomeSourceId == 5).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 amount = (amount * -1) + 100;
                                 usb.Add(new DateTime(year, month, day), amount);
                             }
-                            if ((desc.Contains("ELECTRONIC DEPOSIT IND SD 191")))
+                            if (_context.ImportDescriptions.Where(d => d.IncomeSourceId == 9).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 bes.Add(new DateTime(year, month, day), amount * -1);
                             }
-                            if ((desc.Contains("CTRPT ENGY")))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 10).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 gas += amount;
                             }
-                            if (desc.Contains("DAKOTA ELEC") || desc.Contains("PMT MINNESOTA VALLEY"))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 2).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 electric += amount;
                             }
-                            if ((memo.Contains(" CITY OF SAVAGE")))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 3).Select(d => d.Description.ToUpper()).Any(s => memo.Contains(s)))
                             {
                                 water += amount;
                             }
-                            if ((desc.Contains("DICKS SANITATION")))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 4).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 garbage += amount;
                             }
-                            if ((desc.Contains(" PMT DISCOVER CARD")) || (desc.Contains(" PMT TARGET")) || (desc.Contains(" ALDI ")))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 7).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 household_goods += amount;
                             }
-                            if (desc.Contains("HORACE MANN INS"))
+                            if (_context.ImportDescriptions.Where(d => d.InsuranceId == 1 || d.InsuranceId == 2).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
+                            {
+                                if (amount == (decimal)340)
+                                {
+                                    katie_life_ins += amount;
+                                }
+                                if (amount == (decimal)460)
+                                {
+                                    andy_life_ins += amount;
+                                }
+                            }
+                            if (_context.ImportDescriptions.Where(d => d.InsuranceId == 8 || d.InsuranceId == 2).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 if (amount == (decimal)148.75)
                                 {
@@ -340,16 +360,14 @@ namespace MyBudget.Domain.Imports
                                     umbrella_ins += amount;
                                 }
                             }
+
+                            if (desc.Contains("HORACE MANN INS"))
+                            {
+                                
+                            }
                             if (desc.Contains("PRINCIPAL LIFE"))
                             {
-                                if (amount == (decimal)340)
-                                {
-                                    katie_life_ins += amount;
-                                }
-                                if (amount == (decimal)460)
-                                {
-                                    andy_life_ins += amount;
-                                }
+                                
                             }
                         }
                     }
@@ -400,40 +418,44 @@ namespace MyBudget.Domain.Imports
 
                         if (_month == month && _year == year)
                         {
-                            if ((desc.Contains("TARGET")) || (desc.Contains("WAL-MART")) || (desc.Contains("WM SUPERCENTER")) || (desc.Contains("SHOPKO")) || (desc.Contains("WALMART")) || (desc.Contains("SAMSCLUB")) || (desc.Contains("SAMS CLUB")) || (desc.Contains("ALDI ")))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 7).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s) && !desc.Contains("GAS")))
                             {
                                 household_goods += amount;
                             }
-                            if ((desc.Contains("RAINBOW FOODS")) || (desc.Contains("CUB FOODS")) || (desc.Contains("HYVEE FOOD")) || (desc.Contains("HY VEE")) || (desc.Contains("KOWALSKI'S")) || (desc.Contains("BYERLY'S")) || (desc.Contains("LUNDS")))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 15).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s) && !desc.Contains("GAS")))
                             {
                                 groceries += amount;
                             }
-                            if ((desc.Contains("MILLS FLEET FARM")) || (desc.Contains("ACE HARDWARE")) || (desc.Contains("THE HOME DEPOT")) || (desc.Contains("MENARDS")) || (desc.Contains("LOWES")))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 8).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s) && !desc.Contains("GAS")))
                             {
                                 home_improvements += amount;
                             }
-                            if (desc.Contains("YMCA") || desc.StartsWith("SNAP FITNESS") || desc.Contains("SNAP PRIOR LAKE 519") || desc.Contains("LIFE TIME MO DUES"))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 5).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 gym_member += amount;
                             }
-                            if ((desc.Contains("SPEEDWAY")) || (desc.Contains("CEDAR AVE TIRE")) || (desc.Contains("SAMSCLUB 6311 GAS")) || (desc.Contains("SHELL OIL")) || (desc.Contains("KWIK TRIP")) || (desc.Contains("CASEYS")) || (desc.Contains("MILLS GAS")) || (desc.Contains("MARATHON OIL")) || (desc.Contains("MARATHON PETRO")) || (desc.Contains("SUPERAMERICA")) || (desc.Contains("AMOCO OIL")) || (desc.Contains("HOLIDAY ST")) || (desc.Contains("AUTO (GAS)")) || (desc.Contains("EXXON")) || (desc.Contains("QUICK STOP")) || (desc.Contains("M & H")) || (desc.Contains("KUM & GO")) || (desc.Contains("BP OIL")) || (desc.Contains("HWY 13 BP")) || (desc.Contains("EXPRESSWAY")) || (desc.Contains(" OASIS ")) || (desc.Contains("FLEET FARM GAS")) || (desc.Contains(" AMOCO ")) || (desc.Contains("CUB FUEL ")) || (desc.StartsWith("HY VEE GAS ")) || (desc.StartsWith("MURPHY6795")) || (desc.Contains("MOTORMART") || desc.Contains("SHAKOPEE DAKOTA CONV")))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 1).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 gasoline += amount;
                             }
-                            if ((desc.Contains("CHECKER")) || (desc.Contains("MR TIRE")) || (desc.Contains("OREILLY")) || (desc.Contains("VALLEY AUTO")))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 1002).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 auto_care += amount;
                             }
-                            if ((desc.Contains("HORACE MANN *INSURANCE")))
+                            if (_context.ImportDescriptions.Where(d => d.InsuranceId == 7 || d.InsuranceId == 9).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 car_ins1 += Math.Round((amount / 2), 2);
                                 car_ins2 += Math.Round((amount / 2), 2);
                             }
-                            if ((desc.Contains("MEDIACOM")))
+                            if (_context.ImportDescriptions.Where(d => d.InsuranceId == 1002).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
+                            {
+                                boat_ins += amount;
+                            }
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 14).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 cable_internet += amount;
                             }
-                            if ((desc.Contains("SPRINT *WIRELESS")))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 11).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 cell += amount;
                             }

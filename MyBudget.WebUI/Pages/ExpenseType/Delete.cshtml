@@ -10,27 +10,28 @@
 <div class="warning-msg">
     This will permantly delete the record from the database. To maintain history, edit the record and update it to be inactive.
 </div>
-<div>
-    <h4>ExpenseTypes</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ExpenseTypes.ExpenseType)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ExpenseTypes.ExpenseType)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ExpenseTypes.ExpenseTypeAbbr)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ExpenseTypes.ExpenseTypeAbbr)
-        </dd>
-    </dl>
-    
-    <form method="post">
-        <input type="hidden" asp-for="ExpenseTypes.ExpenseTypePk" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-page="./Index">Back to List</a>
-    </form>
-</div>
+
+    <div>
+        <h4>Expense Type</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ExpenseTypes.ExpenseType)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ExpenseTypes.ExpenseType)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ExpenseTypes.ExpenseTypeAbbr)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ExpenseTypes.ExpenseTypeAbbr)
+            </dd>
+        </dl>
+
+        <form method="post">
+            <input type="hidden" asp-for="ExpenseTypes.ExpenseTypePk" />
+            <input type="submit" value="Delete" class="btn btn-danger" /> |
+            <a asp-page="./Index">Back to List</a>
+        </form>
+    </div>

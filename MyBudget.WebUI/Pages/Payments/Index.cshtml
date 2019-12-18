@@ -2,7 +2,7 @@
 @model MyBudget.WebUI.Pages.Payments.IndexModel
 
 @{
-    ViewData["Title"] = "Index Payment";
+    ViewData["Title"] = "Index";
 }
 
 <form method="post">
@@ -64,8 +64,8 @@
                 @Html.DisplayNameFor(model => model.Payments[0].Loan)
             </th>
             @*<th>
-                @Html.DisplayNameFor(model => model.Payments[0].Month)
-            </th>*@
+                    @Html.DisplayNameFor(model => model.Payments[0].Month)
+                </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.Payments[0].Tuition)
             </th>
@@ -73,8 +73,8 @@
                 @Html.DisplayNameFor(model => model.Payments[0].Vehicle)
             </th>
             @*<th>
-                @Html.DisplayNameFor(model => model.Payments[0].Year)
-            </th>*@
+                    @Html.DisplayNameFor(model => model.Payments[0].Year)
+                </th>*@
             <th></th>
         </tr>
     </thead>
@@ -95,8 +95,8 @@
                     @Html.DisplayFor(modelItem => item.Loan.LoanAlias)
                 </td>
                 @*<td>
-                    @Html.DisplayFor(modelItem => item.Month.MonthAbbr)
-                </td>*@
+                        @Html.DisplayFor(modelItem => item.Month.MonthAbbr)
+                    </td>*@
                 <td>
                     @Html.DisplayFor(modelItem => item.Tuition.TuitionAlias)
                 </td>
@@ -104,11 +104,10 @@
                     @Html.DisplayFor(modelItem => item.Vehicle.VehiclePk)
                 </td>
                 @*<td>
-                    @Html.DisplayFor(modelItem => item.Year.YearPk)
-                </td>*@
+                        @Html.DisplayFor(modelItem => item.Year.YearPk)
+                    </td>*@
                 <td>
                     <a asp-page="./Edit" asp-route-id="@item.PaymentPk">Edit</a> |
-                    @*<a asp-page="./Details" asp-route-id="@item.PaymentPk">Details</a> |*@
                     <a asp-page="./Delete" asp-route-id="@item.PaymentPk">Delete</a>
                 </td>
             </tr>

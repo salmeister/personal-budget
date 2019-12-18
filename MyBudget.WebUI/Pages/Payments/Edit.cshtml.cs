@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using MyBudget.DAL.Repositories;
+using MyBudget.DAL;
 
 namespace MyBudget.WebUI.Pages.Payments
 {
     public class EditModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudgetContext _context;
 
-        public EditModel(IRepositoryWrapper repoWrapper)
+        public EditModel(MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -30,19 +29,24 @@ namespace MyBudget.WebUI.Pages.Payments
                 return NotFound();
             }
 
-            var includes = new Expression<Func<DAL.Payments, Object>>[] { x => x.Loan, x => x.Insurance, x => x.Tuition, x => x.Vehicle };
-            Payments = (await _repoWrapper.Payments.Get(m => m.PaymentPk == id, includes)).FirstOrDefault();
+            Payments = await _context.Payments
+                .Include(p => p.Insurance)
+                .Include(p => p.Loan)
+                .Include(p => p.Month)
+                .Include(p => p.Tuition)
+                .Include(p => p.Vehicle)
+                .Include(p => p.Year).FirstOrDefaultAsync(m => m.PaymentPk == id);
 
             if (Payments == null)
             {
                 return NotFound();
             }
-            ViewData["InsuranceId"] = new SelectList(await _repoWrapper.Insurance.GetAll(), "InsurancePk", "InsuranceAlias");
-            ViewData["LoanId"] = new SelectList(await _repoWrapper.Loans.GetAll(), "LoanPk", "LoanAlias");
-            ViewData["MonthId"] = new SelectList(await _repoWrapper.Months.GetAll(), "MonthPk", "MonthAbbr");
-            ViewData["TuitionId"] = new SelectList(await _repoWrapper.Tuition.GetAll(), "TuitionPk", "TuitionAlias");
-            ViewData["VehicleId"] = new SelectList(await _repoWrapper.Vehicles.GetAll(), "VehiclePk", "VehiclePk");
-            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.GetAll(), "YearPk", "YearPk");
+           ViewData["InsuranceId"] = new SelectList(_context.Insurance, "InsurancePk", "InsuranceAlias");
+           ViewData["LoanId"] = new SelectList(_context.Loans, "LoanPk", "LoanAlias");
+           ViewData["MonthId"] = new SelectList(_context.Months, "MonthPk", "MonthAbbr");
+           ViewData["TuitionId"] = new SelectList(_context.Tuition, "TuitionPk", "TuitionAlias");
+           ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehiclePk", "VehicleName");
+           ViewData["YearId"] = new SelectList(_context.Years, "YearPk", "YearPk");
             return Page();
         }
 
@@ -55,15 +59,15 @@ namespace MyBudget.WebUI.Pages.Payments
                 return Page();
             }
 
-            _repoWrapper.Payments.Update(Payments);
+            _context.Attach(Payments).State = EntityState.Modified;
 
             try
             {
-                await _repoWrapper.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!(await PaymentsExists(Payments.PaymentPk)))
+                if (!PaymentsExists(Payments.PaymentPk))
                 {
                     return NotFound();
                 }
@@ -76,9 +80,9 @@ namespace MyBudget.WebUI.Pages.Payments
             return RedirectToPage("./Index", new { Month = Payments.MonthId, Year = Payments.YearId });
         }
 
-        private async Task<bool> PaymentsExists(int id)
+        private bool PaymentsExists(int id)
         {
-            return !(await _repoWrapper.Payments.Find(id) == null);
+            return _context.Payments.Any(e => e.PaymentPk == id);
         }
     }
 }

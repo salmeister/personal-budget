@@ -1,30 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using MyBudget.DAL.Repositories;
+using MyBudget.DAL;
 
 namespace MyBudget.WebUI.Pages.Tuition
 {
     public class IndexModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public IndexModel(IRepositoryWrapper repoWrapper)
+        public IndexModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         public IList<DAL.Tuition> Tuition { get;set; }
 
         public async Task OnGetAsync()
         {
-            var includes = new Expression<Func<DAL.Tuition, Object>>[] { x => x.FamilyMember, x => x.Institution };
-            Tuition = await _repoWrapper.Tuition.GetAll(includes);
+            Tuition = await _context.Tuition
+                .Include(t => t.FamilyMember)
+                .Include(t => t.Institution).ToListAsync();
         }
     }
 }

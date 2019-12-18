@@ -5,28 +5,28 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MyBudget.DAL.Repositories;
+using MyBudget.DAL;
 
 namespace MyBudget.WebUI.Pages.Payments
 {
     public class CreateModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudgetContext _context;
 
-        public CreateModel(IRepositoryWrapper repoWrapper)
+        public CreateModel(MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
-        public async Task<IActionResult> OnGet(int Month, int Year)
+        public IActionResult OnGet(int Month, int Year)
         {
             Payments = new DAL.Payments() { MonthId = Month, YearId = Year };
-            ViewData["InsuranceId"] = new SelectList(await _repoWrapper.Insurance.Get(s => s.Active), "InsurancePk", "InsuranceAlias");
-            ViewData["LoanId"] = new SelectList(await _repoWrapper.Loans.Get(s => s.Active), "LoanPk", "LoanAlias");
-            ViewData["MonthId"] = new SelectList(await _repoWrapper.Months.GetAll(), "MonthPk", "MonthAbbr");
-            ViewData["TuitionId"] = new SelectList(await _repoWrapper.Tuition.Get(s => s.Active), "TuitionPk", "TuitionAlias");
-            ViewData["VehicleId"] = new SelectList(await _repoWrapper.Vehicles.Get(s => s.Active), "VehiclePk", "VehiclePk");
-            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.GetAll(), "YearPk", "YearPk");
+            ViewData["InsuranceId"] = new SelectList(_context.Insurance, "InsurancePk", "InsuranceAlias");
+            ViewData["LoanId"] = new SelectList(_context.Loans, "LoanPk", "LoanAlias");
+            ViewData["MonthId"] = new SelectList(_context.Months, "MonthPk", "MonthAbbr");
+            ViewData["TuitionId"] = new SelectList(_context.Tuition, "TuitionPk", "TuitionAlias");
+            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehiclePk", "VehicleName");
+            ViewData["YearId"] = new SelectList(_context.Years, "YearPk", "YearPk");
             return Page();
         }
 
@@ -42,10 +42,10 @@ namespace MyBudget.WebUI.Pages.Payments
                 return Page();
             }
 
-            await _repoWrapper.Payments.Add(Payments);
-            await _repoWrapper.SaveChanges();
+            _context.Payments.Add(Payments);
+            await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index", new { Month = Payments.MonthId, Year = Payments.YearId  });
+            return RedirectToPage("./Index", new { Month = Payments.MonthId, Year = Payments.YearId });
         }
     }
 }

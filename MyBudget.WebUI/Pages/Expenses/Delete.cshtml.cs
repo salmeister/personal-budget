@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using MyBudget.DAL.Repositories;
+using MyBudget.DAL;
 
 namespace MyBudget.WebUI.Pages.Expenses
 {
     public class DeleteModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public DeleteModel(IRepositoryWrapper repoWrapper)
+        public DeleteModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -29,8 +28,10 @@ namespace MyBudget.WebUI.Pages.Expenses
                 return NotFound();
             }
 
-            var includes = new Expression<Func<DAL.Expenses, Object>>[] { x => x.ExpenseType };
-            Expenses = (await _repoWrapper.Expenses.Get(m => m.ExpensePk == id, includes)).FirstOrDefault();
+            Expenses = await _context.Expenses
+                .Include(e => e.ExpenseType)
+                .Include(e => e.Month)
+                .Include(e => e.Year).FirstOrDefaultAsync(m => m.ExpensePk == id);
 
             if (Expenses == null)
             {
@@ -46,12 +47,12 @@ namespace MyBudget.WebUI.Pages.Expenses
                 return NotFound();
             }
 
-            Expenses = await _repoWrapper.Expenses.Find(id.Value);
+            Expenses = await _context.Expenses.FindAsync(id);
 
             if (Expenses != null)
             {
-                _repoWrapper.Expenses.Delete(Expenses);
-                await _repoWrapper.SaveChanges();
+                _context.Expenses.Remove(Expenses);
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index", new { Month = Expenses.MonthId, Year = Expenses.YearId });

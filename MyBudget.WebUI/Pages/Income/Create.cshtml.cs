@@ -6,27 +6,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Income
 {
     public class CreateModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public CreateModel(IRepositoryWrapper repoWrapper)
+        public CreateModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
-        public async Task<IActionResult> OnGet(int Month, int Year)
+        public IActionResult OnGet(int Month, int Year)
         {
             Income = new DAL.Income() { MonthId = Month, YearId = Year };
-            ViewData["FamilyMemberId"] = new SelectList(await _repoWrapper.FamilyMembers.Get(s => s.Active), "FamilyMemberPk", "FirstName");
-            ViewData["IncomeSourceId"] = new SelectList(await _repoWrapper.IncomeSources.Get(s => s.Active), "IncomeSourcePk", "IncomeSourceAcro");
-            ViewData["MonthId"] = new SelectList(await _repoWrapper.Months.GetAll(), "MonthPk", "MonthAbbr");
-            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.GetAll(), "YearPk", "YearPk");
-            
+            ViewData["FamilyMemberId"] = new SelectList(_context.FamilyMembers, "FamilyMemberPk", "FirstName");
+            ViewData["IncomeSourceId"] = new SelectList(_context.IncomeSources, "IncomeSourcePk", "IncomeSourceAcro");
+            ViewData["MonthId"] = new SelectList(_context.Months, "MonthPk", "MonthAbbr");
+            ViewData["YearId"] = new SelectList(_context.Years, "YearPk", "YearPk");
             return Page();
         }
 
@@ -42,10 +40,10 @@ namespace MyBudget.WebUI.Pages.Income
                 return Page();
             }
 
-            await _repoWrapper.Income.Add(Income);
-            await _repoWrapper.SaveChanges();
+            _context.Income.Add(Income);
+            await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index", new { Month = Income.MonthId, Year = Income.YearId });
+            return RedirectToPage("./Index");
         }
     }
 }

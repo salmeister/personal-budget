@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using MyBudget.DAL.Repositories;
+using MyBudget.DAL;
 
 namespace MyBudget.WebUI.Pages.Insurance
 {
     public class DeleteModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public DeleteModel(IRepositoryWrapper repoWrapper)
+        public DeleteModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -29,8 +28,11 @@ namespace MyBudget.WebUI.Pages.Insurance
                 return NotFound();
             }
 
-            var includes = new Expression<Func<DAL.Insurance, Object>>[] { x => x.FamilyMember, x => x.InsuranceType, x => x.Property, x => x.Vehicle };
-            Insurance = (await _repoWrapper.Insurance.Get(m => m.InsurancePk == id, includes)).FirstOrDefault();
+            Insurance = await _context.Insurance
+                .Include(i => i.FamilyMember)
+                .Include(i => i.InsuranceType)
+                .Include(i => i.Property)
+                .Include(i => i.Vehicle).FirstOrDefaultAsync(m => m.InsurancePk == id);
 
             if (Insurance == null)
             {
@@ -46,12 +48,12 @@ namespace MyBudget.WebUI.Pages.Insurance
                 return NotFound();
             }
 
-            Insurance = await _repoWrapper.Insurance.Find(id.Value);
+            Insurance = await _context.Insurance.FindAsync(id);
 
             if (Insurance != null)
             {
-                _repoWrapper.Insurance.Delete(Insurance);
-                await _repoWrapper.SaveChanges();
+                _context.Insurance.Remove(Insurance);
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");

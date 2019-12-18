@@ -6,17 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.InsuranceType
 {
     public class DeleteModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public DeleteModel(IRepositoryWrapper repoWrapper)
+        public DeleteModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -29,7 +28,7 @@ namespace MyBudget.WebUI.Pages.InsuranceType
                 return NotFound();
             }
 
-            InsuranceTypes = (await _repoWrapper.InsuranceTypes.Get(m => m.InsurTypePk == id)).FirstOrDefault();
+            InsuranceTypes = await _context.InsuranceTypes.FirstOrDefaultAsync(m => m.InsurTypePk == id);
 
             if (InsuranceTypes == null)
             {
@@ -45,12 +44,12 @@ namespace MyBudget.WebUI.Pages.InsuranceType
                 return NotFound();
             }
 
-            InsuranceTypes = await _repoWrapper.InsuranceTypes.Find(id.Value);
+            InsuranceTypes = await _context.InsuranceTypes.FindAsync(id);
 
             if (InsuranceTypes != null)
             {
-                _repoWrapper.InsuranceTypes.Delete(InsuranceTypes);
-                await _repoWrapper.SaveChanges();
+                _context.InsuranceTypes.Remove(InsuranceTypes);
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");

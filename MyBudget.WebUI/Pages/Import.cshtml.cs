@@ -8,14 +8,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MyBudget.DAL.Repositories;
+using MyBudget.DAL;
 using MyBudget.Domain.Imports;
 
 namespace MyBudget.WebUI.Pages
 {
     public class ImportModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudgetContext _context;
         private IWebHostEnvironment _environment;
         private readonly string importFolder = "imports";
 
@@ -33,22 +33,22 @@ namespace MyBudget.WebUI.Pages
         public string Result { get; set; }
 
 
-        public ImportModel(IRepositoryWrapper repoWrapper, IWebHostEnvironment environment)
+        public ImportModel(MyBudgetContext context, IWebHostEnvironment environment)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
             _environment = environment;
         }
 
         public void OnGet()
         {
-            ViewData["MonthId"] = new SelectList(_repoWrapper.Months.GetAll().Result, "MonthPk", "MonthAbbr");
-            ViewData["YearId"] = new SelectList(_repoWrapper.Years.GetAll().Result.Where(y => y.YearPk >= DateTime.Now.AddYears(-1).Year && y.YearPk <= DateTime.Now.Year), "YearPk", "YearPk");
+            ViewData["MonthId"] = new SelectList(_context.Months, "MonthPk", "MonthAbbr");
+            ViewData["YearId"] = new SelectList(_context.Years.Where(y => y.YearPk >= DateTime.Now.AddYears(-1).Year && y.YearPk <= DateTime.Now.Year), "YearPk", "YearPk");
         }
 
         public async Task<IActionResult> OnPostAsync(int Month, int Year, bool Preview)
         {
-            ViewData["MonthId"] = new SelectList(_repoWrapper.Months.GetAll().Result, "MonthPk", "MonthAbbr");
-            ViewData["YearId"] = new SelectList(_repoWrapper.Years.GetAll().Result.Where(y => y.YearPk >= DateTime.Now.AddYears(-1).Year && y.YearPk <= DateTime.Now.Year), "YearPk", "YearPk");
+            ViewData["MonthId"] = new SelectList(_context.Months, "MonthPk", "MonthAbbr");
+            ViewData["YearId"] = new SelectList(_context.Years.Where(y => y.YearPk >= DateTime.Now.AddYears(-1).Year && y.YearPk <= DateTime.Now.Year), "YearPk", "YearPk");
 
             CleanImportDir();
             //Checking File
@@ -64,8 +64,8 @@ namespace MyBudget.WebUI.Pages
                 await CreditFile.CopyToAsync(fileStream);
             }
             //Do Import
-            USBImport importer = new USBImport(_repoWrapper, Month, Year, checkingFile, creditFile);
-            Result = await importer.Import(Preview);
+            USBImport importer = new USBImport(_context, Month, Year, checkingFile, creditFile);
+            Result = importer.Import(Preview);
             CleanImportDir();
 
             return Page();

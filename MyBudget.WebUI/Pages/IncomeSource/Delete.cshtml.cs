@@ -6,17 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.IncomeSource
 {
     public class DeleteModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public DeleteModel(IRepositoryWrapper repoWrapper)
+        public DeleteModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -29,7 +28,7 @@ namespace MyBudget.WebUI.Pages.IncomeSource
                 return NotFound();
             }
 
-            IncomeSources = (await _repoWrapper.IncomeSources.Get(m => m.IncomeSourcePk == id)).FirstOrDefault();
+            IncomeSources = await _context.IncomeSources.FirstOrDefaultAsync(m => m.IncomeSourcePk == id);
 
             if (IncomeSources == null)
             {
@@ -45,12 +44,12 @@ namespace MyBudget.WebUI.Pages.IncomeSource
                 return NotFound();
             }
 
-            IncomeSources = await _repoWrapper.IncomeSources.Find(id.Value);
+            IncomeSources = await _context.IncomeSources.FindAsync(id);
 
             if (IncomeSources != null)
             {
-                _repoWrapper.IncomeSources.Delete(IncomeSources);
-                await _repoWrapper.SaveChanges();
+                _context.IncomeSources.Remove(IncomeSources);
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");

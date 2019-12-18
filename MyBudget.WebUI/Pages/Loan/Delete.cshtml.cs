@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Loan
 {
     public class DeleteModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public DeleteModel(IRepositoryWrapper repoWrapper)
+        public DeleteModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -30,8 +28,11 @@ namespace MyBudget.WebUI.Pages.Loan
                 return NotFound();
             }
 
-            var includes = new Expression<Func<DAL.Loans, Object>>[] { x => x.FamilyMember, x => x.LoanType, x => x.Property, x => x.Vehicle };
-            Loans = (await _repoWrapper.Loans.Get(m => m.LoanPk == id, includes)).FirstOrDefault();
+            Loans = await _context.Loans
+                .Include(l => l.FamilyMember)
+                .Include(l => l.LoanType)
+                .Include(l => l.Property)
+                .Include(l => l.Vehicle).FirstOrDefaultAsync(m => m.LoanPk == id);
 
             if (Loans == null)
             {
@@ -47,12 +48,12 @@ namespace MyBudget.WebUI.Pages.Loan
                 return NotFound();
             }
 
-            Loans = await _repoWrapper.Loans.Find(id.Value);
+            Loans = await _context.Loans.FindAsync(id);
 
             if (Loans != null)
             {
-                _repoWrapper.Loans.Delete(Loans);
-                await _repoWrapper.SaveChanges();
+                _context.Loans.Remove(Loans);
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");

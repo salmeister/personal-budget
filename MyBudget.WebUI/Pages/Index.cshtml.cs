@@ -1,25 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MyBudget.DAL.Repositories;
+using MyBudget.DAL;
 using MyBudget.WebUI.Models;
 
 namespace MyBudget.WebUI.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudgetContext _context;
 
-        //Constructor
-        public IndexModel(IRepositoryWrapper repoWrapper)
+        public IndexModel(MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         //Model
@@ -27,23 +22,23 @@ namespace MyBudget.WebUI.Pages
         public int Year { get; set; }
 
 
-        public async Task OnGet(int? Year)
+        public void OnGet(int? Year)
         {
-            await GetYearData(Year);
+            GetYearData(Year);
 
-            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.Get(y => y.YearPk >= 2005 && y.YearPk <= DateTime.Now.Year), "YearPk", "YearPk");
+            ViewData["YearId"] = new SelectList(_context.Years.Where(y => y.YearPk >= 2005 && y.YearPk <= DateTime.Now.Year), "YearPk", "YearPk");
 
         }
 
-        public async Task OnPost(int? Year)
+        public void OnPost(int? Year)
         {
-            await GetYearData(Year);
+            GetYearData(Year);
 
-            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.Get(y => y.YearPk >= 2005 && y.YearPk <= DateTime.Now.Year), "YearPk", "YearPk");
+            ViewData["YearId"] = new SelectList(_context.Years.Where(y => y.YearPk >= 2005 && y.YearPk <= DateTime.Now.Year), "YearPk", "YearPk");
 
         }
 
-        public async Task GetYearData(int? Year)
+        public void GetYearData(int? Year)
         {
             Summaries = new List<Summary>();
 
@@ -65,10 +60,10 @@ namespace MyBudget.WebUI.Pages
                 Summaries.Add(new Summary()
                 {
                     Year = Year.Value,
-                    Month = (await _repoWrapper.Months.Get(x => x.MonthPk == m)).FirstOrDefault(),
-                    Expenses = (await _repoWrapper.Expenses.GetAll()).Where(p => p.MonthId == m && p.YearId == Year).Sum(p => p.Amount) ?? 0,
-                    Payments = (await _repoWrapper.Payments.GetAll()).Where(p => p.MonthId == m && p.YearId == Year).Sum(p => p.Amount),
-                    Income = (await _repoWrapper.Income.GetAll()).Where(p => p.MonthId == m && p.YearId == Year).Sum(p => p.Amount) ?? 0,
+                    Month = _context.Months.Where(x => x.MonthPk == m).FirstOrDefault(),
+                    Expenses = _context.Expenses.Where(p => p.MonthId == m && p.YearId == Year).Sum(p => p.Amount) ?? 0,
+                    Payments = _context.Payments.Where(p => p.MonthId == m && p.YearId == Year).Sum(p => p.Amount),
+                    Income = _context.Income.Where(p => p.MonthId == m && p.YearId == Year).Sum(p => p.Amount) ?? 0,
                 });
 
             }

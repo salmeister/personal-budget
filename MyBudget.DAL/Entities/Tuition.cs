@@ -8,6 +8,7 @@ namespace MyBudget.DAL
     {
         public Tuition()
         {
+            ImportDescriptions = new HashSet<ImportDescriptions>();
             Payments = new HashSet<Payments>();
         }
 
@@ -17,10 +18,11 @@ namespace MyBudget.DAL
         public int FamilyMemberId { get; set; }
         public int InstitutionId { get; set; }
         public bool Active { get; set; }
-
         [DisplayName("Family Member")]
+
         public virtual FamilyMembers FamilyMember { get; set; }
         public virtual Institutions Institution { get; set; }
+        public virtual ICollection<ImportDescriptions> ImportDescriptions { get; set; }
         public virtual ICollection<Payments> Payments { get; set; }
     }
 }

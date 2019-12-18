@@ -9,6 +9,7 @@ namespace MyBudget.DAL
         public ExpenseTypes()
         {
             Expenses = new HashSet<Expenses>();
+            ImportDescriptions = new HashSet<ImportDescriptions>();
         }
 
         public int ExpenseTypePk { get; set; }
@@ -18,5 +19,6 @@ namespace MyBudget.DAL
         public string ExpenseTypeAbbr { get; set; }
 
         public virtual ICollection<Expenses> Expenses { get; set; }
+        public virtual ICollection<ImportDescriptions> ImportDescriptions { get; set; }
     }
 }

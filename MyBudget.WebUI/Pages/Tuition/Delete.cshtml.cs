@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using MyBudget.DAL.Repositories;
+using MyBudget.DAL;
 
 namespace MyBudget.WebUI.Pages.Tuition
 {
     public class DeleteModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudgetContext _context;
 
-        public DeleteModel(IRepositoryWrapper repoWrapper)
+        public DeleteModel(MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -29,8 +28,9 @@ namespace MyBudget.WebUI.Pages.Tuition
                 return NotFound();
             }
 
-            var includes = new Expression<Func<DAL.Tuition, Object>>[] { x => x.FamilyMember, x => x.Institution };
-            Tuition = (await _repoWrapper.Tuition.Get(m => m.TuitionPk == id, includes)).FirstOrDefault();
+            Tuition = await _context.Tuition
+                .Include(t => t.FamilyMember)
+                .Include(t => t.Institution).FirstOrDefaultAsync(m => m.TuitionPk == id);
 
             if (Tuition == null)
             {
@@ -46,12 +46,12 @@ namespace MyBudget.WebUI.Pages.Tuition
                 return NotFound();
             }
 
-            Tuition = await _repoWrapper.Tuition.Find(id.Value);
+            Tuition = await _context.Tuition.FindAsync(id);
 
             if (Tuition != null)
             {
-                _repoWrapper.Tuition.Delete(Tuition);
-                await _repoWrapper.SaveChanges();
+                _context.Tuition.Remove(Tuition);
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");

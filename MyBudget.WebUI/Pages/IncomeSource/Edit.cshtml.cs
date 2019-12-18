@@ -7,17 +7,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.IncomeSource
 {
     public class EditModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public EditModel(IRepositoryWrapper repoWrapper)
+        public EditModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -30,7 +29,7 @@ namespace MyBudget.WebUI.Pages.IncomeSource
                 return NotFound();
             }
 
-            IncomeSources = (await _repoWrapper.IncomeSources.Get(m => m.IncomeSourcePk == id)).FirstOrDefault();
+            IncomeSources = await _context.IncomeSources.FirstOrDefaultAsync(m => m.IncomeSourcePk == id);
 
             if (IncomeSources == null)
             {
@@ -48,15 +47,15 @@ namespace MyBudget.WebUI.Pages.IncomeSource
                 return Page();
             }
 
-            _repoWrapper.IncomeSources.Update(IncomeSources);
+            _context.Attach(IncomeSources).State = EntityState.Modified;
 
             try
             {
-                await _repoWrapper.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!(await IncomeSourcesExists(IncomeSources.IncomeSourcePk)))
+                if (!IncomeSourcesExists(IncomeSources.IncomeSourcePk))
                 {
                     return NotFound();
                 }
@@ -69,10 +68,9 @@ namespace MyBudget.WebUI.Pages.IncomeSource
             return RedirectToPage("./Index");
         }
 
-        private async Task<bool> IncomeSourcesExists(int id)
+        private bool IncomeSourcesExists(int id)
         {
-            return !(await _repoWrapper.IncomeSources.Find(id) == null);
+            return _context.IncomeSources.Any(e => e.IncomeSourcePk == id);
         }
-
     }
 }

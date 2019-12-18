@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using MyBudget.DAL.Repositories;
+using MyBudget.DAL;
 
 namespace MyBudget.WebUI.Pages.Tuition
 {
     public class EditModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudgetContext _context;
 
-        public EditModel(IRepositoryWrapper repoWrapper)
+        public EditModel(MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -30,15 +29,16 @@ namespace MyBudget.WebUI.Pages.Tuition
                 return NotFound();
             }
 
-            var includes = new Expression<Func<DAL.Tuition, Object>>[] { x => x.FamilyMember, x => x.Institution };
-            Tuition = (await _repoWrapper.Tuition.Get(m => m.TuitionPk == id, includes)).FirstOrDefault();
+            Tuition = await _context.Tuition
+                .Include(t => t.FamilyMember)
+                .Include(t => t.Institution).FirstOrDefaultAsync(m => m.TuitionPk == id);
 
             if (Tuition == null)
             {
                 return NotFound();
             }
-            ViewData["FamilyMemberId"] = new SelectList(await _repoWrapper.FamilyMembers.GetAll(), "FamilyMemberPk", "FirstName");
-            ViewData["InstitutionId"] = new SelectList(await _repoWrapper.Institutions.GetAll(), "InstitutionPk", "InstitutionName");
+           ViewData["FamilyMemberId"] = new SelectList(_context.FamilyMembers, "FamilyMemberPk", "FirstName");
+           ViewData["InstitutionId"] = new SelectList(_context.Institutions, "InstitutionPk", "InstitutionName");
             return Page();
         }
 
@@ -51,15 +51,15 @@ namespace MyBudget.WebUI.Pages.Tuition
                 return Page();
             }
 
-            _repoWrapper.Tuition.Update(Tuition);
+            _context.Attach(Tuition).State = EntityState.Modified;
 
             try
             {
-                await _repoWrapper.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!(await TuitionExists(Tuition.TuitionPk)))
+                if (!TuitionExists(Tuition.TuitionPk))
                 {
                     return NotFound();
                 }
@@ -72,9 +72,9 @@ namespace MyBudget.WebUI.Pages.Tuition
             return RedirectToPage("./Index");
         }
 
-        private async Task<bool> TuitionExists(int id)
+        private bool TuitionExists(int id)
         {
-            return !(await _repoWrapper.Tuition.Find(id) == null);
+            return _context.Tuition.Any(e => e.TuitionPk == id);
         }
     }
 }

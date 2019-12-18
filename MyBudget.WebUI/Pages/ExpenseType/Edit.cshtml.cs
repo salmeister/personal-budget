@@ -7,17 +7,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.ExpenseType
 {
     public class EditModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public EditModel(IRepositoryWrapper repoWrapper)
+        public EditModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -30,7 +29,7 @@ namespace MyBudget.WebUI.Pages.ExpenseType
                 return NotFound();
             }
 
-            ExpenseTypes = (await _repoWrapper.ExpenseTypes.Get(m => m.ExpenseTypePk == id)).FirstOrDefault();
+            ExpenseTypes = await _context.ExpenseTypes.FirstOrDefaultAsync(m => m.ExpenseTypePk == id);
 
             if (ExpenseTypes == null)
             {
@@ -48,15 +47,15 @@ namespace MyBudget.WebUI.Pages.ExpenseType
                 return Page();
             }
 
-            _repoWrapper.ExpenseTypes.Update(ExpenseTypes);
+            _context.Attach(ExpenseTypes).State = EntityState.Modified;
 
             try
             {
-                await _repoWrapper.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!(await ExpenseTypesExists(ExpenseTypes.ExpenseTypePk)))
+                if (!ExpenseTypesExists(ExpenseTypes.ExpenseTypePk))
                 {
                     return NotFound();
                 }
@@ -69,9 +68,9 @@ namespace MyBudget.WebUI.Pages.ExpenseType
             return RedirectToPage("./Index");
         }
 
-        private async Task<bool> ExpenseTypesExists(int id)
+        private bool ExpenseTypesExists(int id)
         {
-            return !(await _repoWrapper.ExpenseTypes.Find(id) == null);
+            return _context.ExpenseTypes.Any(e => e.ExpenseTypePk == id);
         }
     }
 }

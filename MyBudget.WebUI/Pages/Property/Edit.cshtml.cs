@@ -7,17 +7,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Property
 {
     public class EditModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudgetContext _context;
 
-        public EditModel(IRepositoryWrapper repoWrapper)
+        public EditModel(MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -30,7 +29,7 @@ namespace MyBudget.WebUI.Pages.Property
                 return NotFound();
             }
 
-            Properties = (await _repoWrapper.Properties.Get(m => m.PropertyPk == id)).FirstOrDefault();
+            Properties = await _context.Properties.FirstOrDefaultAsync(m => m.PropertyPk == id);
 
             if (Properties == null)
             {
@@ -48,15 +47,15 @@ namespace MyBudget.WebUI.Pages.Property
                 return Page();
             }
 
-            _repoWrapper.Properties.Update(Properties);
+            _context.Attach(Properties).State = EntityState.Modified;
 
             try
             {
-                await _repoWrapper.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!(await PropertiesExists(Properties.PropertyPk)))
+                if (!PropertiesExists(Properties.PropertyPk))
                 {
                     return NotFound();
                 }
@@ -69,9 +68,9 @@ namespace MyBudget.WebUI.Pages.Property
             return RedirectToPage("./Index");
         }
 
-        private async Task<bool> PropertiesExists(int id)
+        private bool PropertiesExists(int id)
         {
-            return !(await _repoWrapper.Properties.Find(id) == null);
+            return _context.Properties.Any(e => e.PropertyPk == id);
         }
     }
 }

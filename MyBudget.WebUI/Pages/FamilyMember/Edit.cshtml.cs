@@ -7,17 +7,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.FamilyMember
 {
     public class EditModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public EditModel(IRepositoryWrapper repoWrapper)
+        public EditModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -30,7 +29,7 @@ namespace MyBudget.WebUI.Pages.FamilyMember
                 return NotFound();
             }
 
-            FamilyMembers = (await _repoWrapper.FamilyMembers.Get(m => m.FamilyMemberPk == id)).FirstOrDefault();
+            FamilyMembers = await _context.FamilyMembers.FirstOrDefaultAsync(m => m.FamilyMemberPk == id);
 
             if (FamilyMembers == null)
             {
@@ -48,15 +47,15 @@ namespace MyBudget.WebUI.Pages.FamilyMember
                 return Page();
             }
 
-            _repoWrapper.FamilyMembers.Update(FamilyMembers);
+            _context.Attach(FamilyMembers).State = EntityState.Modified;
 
             try
             {
-                await _repoWrapper.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (! await (FamilyMembersExists(FamilyMembers.FamilyMemberPk)))
+                if (!FamilyMembersExists(FamilyMembers.FamilyMemberPk))
                 {
                     return NotFound();
                 }
@@ -69,9 +68,9 @@ namespace MyBudget.WebUI.Pages.FamilyMember
             return RedirectToPage("./Index");
         }
 
-        private async Task<bool> FamilyMembersExists(int id)
+        private bool FamilyMembersExists(int id)
         {
-            return !(await _repoWrapper.FamilyMembers.Find(id) == null);
+            return _context.FamilyMembers.Any(e => e.FamilyMemberPk == id);
         }
     }
 }

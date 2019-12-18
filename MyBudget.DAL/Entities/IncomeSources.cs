@@ -8,6 +8,7 @@ namespace MyBudget.DAL
     {
         public IncomeSources()
         {
+            ImportDescriptions = new HashSet<ImportDescriptions>();
             Income = new HashSet<Income>();
         }
 
@@ -18,6 +19,7 @@ namespace MyBudget.DAL
         public string IncomeSourceName { get; set; }
         public bool Active { get; set; }
 
+        public virtual ICollection<ImportDescriptions> ImportDescriptions { get; set; }
         public virtual ICollection<Income> Income { get; set; }
     }
 }

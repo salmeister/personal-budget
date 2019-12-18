@@ -6,22 +6,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Vehicle
 {
     public class CreateModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public CreateModel(IRepositoryWrapper repoWrapper)
+        public CreateModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
-        public async Task<IActionResult> OnGet()
+        public IActionResult OnGet()
         {
-            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.GetAll(), "YearPk", "YearPk");
+        ViewData["VehicleYearId"] = new SelectList(_context.Years, "YearPk", "YearPk");
             return Page();
         }
 
@@ -37,8 +36,8 @@ namespace MyBudget.WebUI.Pages.Vehicle
                 return Page();
             }
 
-            await _repoWrapper.Vehicles.Add(Vehicles);
-            await _repoWrapper.SaveChanges();
+            _context.Vehicles.Add(Vehicles);
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }

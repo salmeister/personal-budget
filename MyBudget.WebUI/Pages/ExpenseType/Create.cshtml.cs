@@ -6,17 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.ExpenseType
 {
     public class CreateModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public CreateModel(IRepositoryWrapper repoWrapper)
+        public CreateModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         public IActionResult OnGet()
@@ -36,8 +35,8 @@ namespace MyBudget.WebUI.Pages.ExpenseType
                 return Page();
             }
 
-            await _repoWrapper.ExpenseTypes.Add(ExpenseTypes);
-            await _repoWrapper.SaveChanges();
+            _context.ExpenseTypes.Add(ExpenseTypes);
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }

@@ -11,7 +11,7 @@
     This will permantly delete the record from the database. To maintain history, edit the record and update it to be inactive.
 </div>
 <div>
-    <h4>LoanTypes</h4>
+    <h4>Loan Type</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -27,7 +27,7 @@
             @Html.DisplayFor(model => model.LoanTypes.Active)
         </dd>
     </dl>
-
+    
     <form method="post">
         <input type="hidden" asp-for="LoanTypes.LoanTypePk" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |

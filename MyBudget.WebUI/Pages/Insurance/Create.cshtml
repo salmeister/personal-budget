@@ -20,7 +20,9 @@
             </div>
             <div class="form-group">
                 <label asp-for="Insurance.InsuranceType" class="control-label"></label>
-                <select asp-for="Insurance.InsuranceTypeId" class ="form-control" asp-items="ViewBag.InsuranceTypeId"></select>
+                <select asp-for="Insurance.InsuranceTypeId" class="form-control" asp-items="ViewBag.InsuranceTypeId">
+                    <option disabled selected>--- SELECT ---</option>
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="Insurance.FamilyMember" class="control-label"></label>

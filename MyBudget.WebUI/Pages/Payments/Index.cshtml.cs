@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Payments
 {
     public class IndexModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public IndexModel(IRepositoryWrapper repoWrapper)
+        public IndexModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         public IList<DAL.Payments> Payments { get;set; }
@@ -26,13 +24,7 @@ namespace MyBudget.WebUI.Pages.Payments
 
         public async Task OnGetAsync(int? Month, int? Year)
         {
-            if (Month is null)
-            {
-                DateTime today = DateTime.Now;
-                Month = today.Month;
-                Year = today.Year;
-            }
-            await GetPaymentData(Month.Value, Year.Value);
+            await GetPaymentData(Month, Year);
         }
 
         public async Task<IActionResult> OnPostAsync(int Month, int Year)
@@ -41,16 +33,27 @@ namespace MyBudget.WebUI.Pages.Payments
             return Page();
         }
 
-        private async Task GetPaymentData(int Month, int Year)
+        private async Task GetPaymentData(int? Month, int? Year)
         {
-            this.Year = Year;
-            this.Month = Month;
+            if (Month is null)
+            {
+                DateTime today = DateTime.Now;
+                Month = today.Month;
+                Year = today.Year;
+            }
+            this.Year = Year.Value;
+            this.Month = Month.Value;
 
-            var includes = new Expression<Func<DAL.Payments, Object>>[] { x => x.Loan, x => x.Insurance, x => x.Tuition, x => x.Vehicle };
-            Payments = await _repoWrapper.Payments.Get(p => p.MonthId == Month && p.YearId == Year, includes);
+            Payments = await _context.Payments
+                .Include(p => p.Insurance)
+                .Include(p => p.Loan)
+                .Include(p => p.Month)
+                .Include(p => p.Tuition)
+                .Include(p => p.Vehicle)
+                .Include(p => p.Year).Where(p => p.MonthId == Month && p.YearId == Year).ToListAsync();
 
-            ViewData["MonthId"] = new SelectList(await _repoWrapper.Months.GetAll(), "MonthPk", "MonthAbbr");
-            ViewData["YearId"] = new SelectList(await _repoWrapper.Years.Get(y => y.YearPk >= 2005 && y.YearPk <= DateTime.Now.Year), "YearPk", "YearPk");
+            ViewData["MonthId"] = new SelectList(_context.Months, "MonthPk", "MonthAbbr");
+            ViewData["YearId"] = new SelectList(_context.Years, "YearPk", "YearPk");
         }
     }
 }

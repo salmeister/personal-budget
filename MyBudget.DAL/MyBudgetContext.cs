@@ -15,28 +15,34 @@ namespace MyBudget.DAL
         {
         }
 
-        internal virtual DbSet<ExpenseTypes> ExpenseTypes { get; set; }
-        internal virtual DbSet<Expenses> Expenses { get; set; }
-        internal virtual DbSet<FamilyMembers> FamilyMembers { get; set; }
-        internal virtual DbSet<Income> Income { get; set; }
-        internal virtual DbSet<IncomeSources> IncomeSources { get; set; }
-        internal virtual DbSet<Institutions> Institutions { get; set; }
-        internal virtual DbSet<Insurance> Insurance { get; set; }
-        internal virtual DbSet<InsuranceTypes> InsuranceTypes { get; set; }
-        internal virtual DbSet<LoanTypes> LoanTypes { get; set; }
-        internal virtual DbSet<Loans> Loans { get; set; }
+        public virtual DbSet<ExpenseTypes> ExpenseTypes { get; set; }
+        public virtual DbSet<Expenses> Expenses { get; set; }
+        public virtual DbSet<FamilyMembers> FamilyMembers { get; set; }
+        public virtual DbSet<ImportDescriptions> ImportDescriptions { get; set; }
+        public virtual DbSet<Income> Income { get; set; }
+        public virtual DbSet<IncomeSources> IncomeSources { get; set; }
+        public virtual DbSet<Institutions> Institutions { get; set; }
+        public virtual DbSet<Insurance> Insurance { get; set; }
+        public virtual DbSet<InsuranceTypes> InsuranceTypes { get; set; }
+        public virtual DbSet<LoanTypes> LoanTypes { get; set; }
+        public virtual DbSet<Loans> Loans { get; set; }
         public virtual DbSet<Months> Months { get; set; }
-        internal virtual DbSet<Payments> Payments { get; set; }
-        internal virtual DbSet<Properties> Properties { get; set; }
-        internal virtual DbSet<Tuition> Tuition { get; set; }
-        internal virtual DbSet<Vehicles> Vehicles { get; set; }
-        internal virtual DbSet<Years> Years { get; set; }
+        public virtual DbSet<Payments> Payments { get; set; }
+        public virtual DbSet<Properties> Properties { get; set; }
+        public virtual DbSet<Tuition> Tuition { get; set; }
+        public virtual DbSet<Vehicles> Vehicles { get; set; }
+        public virtual DbSet<ViewExpenseTotals> ViewExpenseTotals { get; set; }
+        public virtual DbSet<ViewIncomeTotals> ViewIncomeTotals { get; set; }
+        public virtual DbSet<ViewPaymentTotals> ViewPaymentTotals { get; set; }
+        public virtual DbSet<ViewTotals> ViewTotals { get; set; }
+        public virtual DbSet<Years> Years { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MyBudget");
             }
         }
 
@@ -128,6 +134,55 @@ namespace MyBudget.DAL
                     .HasColumnName("middle_name")
                     .HasMaxLength(20)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<ImportDescriptions>(entity =>
+            {
+                entity.HasKey(e => e.ImportDescriptionPk);
+
+                entity.ToTable("import_descriptions");
+
+                entity.Property(e => e.ImportDescriptionPk).HasColumnName("import_description_pk");
+
+                entity.Property(e => e.Description)
+                    .HasColumnName("description")
+                    .HasMaxLength(250)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ExpenseTypeId).HasColumnName("expense_type_id");
+
+                entity.Property(e => e.IncomeSourceId).HasColumnName("income_source_id");
+
+                entity.Property(e => e.InsuranceId).HasColumnName("insurance_id");
+
+                entity.Property(e => e.LoanId).HasColumnName("loan_id");
+
+                entity.Property(e => e.TuitionId).HasColumnName("tuition_id");
+
+                entity.HasOne(d => d.ExpenseType)
+                    .WithMany(p => p.ImportDescriptions)
+                    .HasForeignKey(d => d.ExpenseTypeId)
+                    .HasConstraintName("FK_import_descriptions_expense_types");
+
+                entity.HasOne(d => d.IncomeSource)
+                    .WithMany(p => p.ImportDescriptions)
+                    .HasForeignKey(d => d.IncomeSourceId)
+                    .HasConstraintName("FK_import_descriptions_income_sources");
+
+                entity.HasOne(d => d.Insurance)
+                    .WithMany(p => p.ImportDescriptions)
+                    .HasForeignKey(d => d.InsuranceId)
+                    .HasConstraintName("FK_import_descriptions_insurance");
+
+                entity.HasOne(d => d.Loan)
+                    .WithMany(p => p.ImportDescriptions)
+                    .HasForeignKey(d => d.LoanId)
+                    .HasConstraintName("FK_import_descriptions_loans");
+
+                entity.HasOne(d => d.Tuition)
+                    .WithMany(p => p.ImportDescriptions)
+                    .HasForeignKey(d => d.TuitionId)
+                    .HasConstraintName("FK_import_descriptions_tuition");
             });
 
             modelBuilder.Entity<Income>(entity =>
@@ -559,6 +614,74 @@ namespace MyBudget.DAL
                     .WithMany(p => p.Vehicles)
                     .HasForeignKey(d => d.VehicleYearId)
                     .HasConstraintName("FK_vehicles_years");
+            });
+
+            modelBuilder.Entity<ViewExpenseTotals>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("View_Expense_Totals");
+
+                entity.Property(e => e.Expenses)
+                    .HasColumnName("expenses")
+                    .HasColumnType("decimal(38, 2)");
+
+                entity.Property(e => e.MonthId).HasColumnName("month_id");
+
+                entity.Property(e => e.YearId).HasColumnName("year_id");
+            });
+
+            modelBuilder.Entity<ViewIncomeTotals>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("View_Income_Totals");
+
+                entity.Property(e => e.Income)
+                    .HasColumnName("income")
+                    .HasColumnType("decimal(38, 2)");
+
+                entity.Property(e => e.MonthId).HasColumnName("month_id");
+
+                entity.Property(e => e.YearId).HasColumnName("year_id");
+            });
+
+            modelBuilder.Entity<ViewPaymentTotals>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("View_Payment_Totals");
+
+                entity.Property(e => e.MonthId).HasColumnName("month_id");
+
+                entity.Property(e => e.Payments)
+                    .HasColumnName("payments")
+                    .HasColumnType("decimal(38, 2)");
+
+                entity.Property(e => e.YearId).HasColumnName("year_id");
+            });
+
+            modelBuilder.Entity<ViewTotals>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("View_Totals");
+
+                entity.Property(e => e.Expenses)
+                    .HasColumnName("expenses")
+                    .HasColumnType("decimal(38, 2)");
+
+                entity.Property(e => e.Income)
+                    .HasColumnName("income")
+                    .HasColumnType("decimal(38, 2)");
+
+                entity.Property(e => e.MonthId).HasColumnName("month_id");
+
+                entity.Property(e => e.Payments)
+                    .HasColumnName("payments")
+                    .HasColumnType("decimal(38, 2)");
+
+                entity.Property(e => e.YearId).HasColumnName("year_id");
             });
 
             modelBuilder.Entity<Years>(entity =>

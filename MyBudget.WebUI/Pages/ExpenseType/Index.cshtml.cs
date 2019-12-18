@@ -2,26 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.ExpenseType
 {
     public class IndexModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public IndexModel(IRepositoryWrapper repoWrapper)
+        public IndexModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         public IList<ExpenseTypes> ExpenseTypes { get;set; }
 
         public async Task OnGetAsync()
         {
-            ExpenseTypes = await _repoWrapper.ExpenseTypes.GetAll();
+            ExpenseTypes = await _context.ExpenseTypes.ToListAsync();
         }
     }
 }

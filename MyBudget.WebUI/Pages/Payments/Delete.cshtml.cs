@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using MyBudget.DAL.Repositories;
+using MyBudget.DAL;
 
 namespace MyBudget.WebUI.Pages.Payments
 {
     public class DeleteModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public DeleteModel(IRepositoryWrapper repoWrapper)
+        public DeleteModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
         [BindProperty]
@@ -29,8 +28,13 @@ namespace MyBudget.WebUI.Pages.Payments
                 return NotFound();
             }
 
-            var includes = new Expression<Func<DAL.Payments, Object>>[] { x => x.Loan, x => x.Insurance, x => x.Tuition, x => x.Vehicle };
-            Payments = (await _repoWrapper.Payments.Get(m => m.PaymentPk == id, includes)).FirstOrDefault();
+            Payments = await _context.Payments
+                .Include(p => p.Insurance)
+                .Include(p => p.Loan)
+                .Include(p => p.Month)
+                .Include(p => p.Tuition)
+                .Include(p => p.Vehicle)
+                .Include(p => p.Year).FirstOrDefaultAsync(m => m.PaymentPk == id);
 
             if (Payments == null)
             {
@@ -46,15 +50,15 @@ namespace MyBudget.WebUI.Pages.Payments
                 return NotFound();
             }
 
-            Payments = await _repoWrapper.Payments.Find(id.Value);
+            Payments = await _context.Payments.FindAsync(id);
 
             if (Payments != null)
             {
-                _repoWrapper.Payments.Delete(Payments);
-                await _repoWrapper.SaveChanges();
+                _context.Payments.Remove(Payments);
+                await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("./Index", new { Month = Payments.MonthId, Year = Payments.YearId });
+            return RedirectToPage("./Index");
         }
     }
 }

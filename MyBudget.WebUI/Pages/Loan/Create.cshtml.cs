@@ -6,27 +6,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyBudget.DAL;
-using MyBudget.DAL.Repositories;
 
 namespace MyBudget.WebUI.Pages.Loan
 {
     public class CreateModel : PageModel
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly MyBudget.DAL.MyBudgetContext _context;
 
-        public CreateModel(IRepositoryWrapper repoWrapper)
+        public CreateModel(MyBudget.DAL.MyBudgetContext context)
         {
-            _repoWrapper = repoWrapper;
+            _context = context;
         }
 
-        public async Task<IActionResult> OnGet()
+        public IActionResult OnGet()
         {
-
-            ViewData["FamilyMemberId"] = new SelectList(await _repoWrapper.FamilyMembers.Get(s => s.Active), "FamilyMemberPk", "FirstName");
-            ViewData["LoanTypeId"] = new SelectList(await _repoWrapper.LoanTypes.Get(s => s.Active), "LoanTypePk", "LoanTypeName");
-            ViewData["PropertyId"] = new SelectList(await _repoWrapper.Properties.Get(s => s.Active), "PropertyPk", "PropertyName");
-            ViewData["VehicleId"] = new SelectList(await _repoWrapper.Vehicles.Get(s => s.Active), "VehiclePk", "VehicleName");
-
+        ViewData["FamilyMemberId"] = new SelectList(_context.FamilyMembers, "FamilyMemberPk", "FirstName");
+        ViewData["LoanTypeId"] = new SelectList(_context.LoanTypes, "LoanTypePk", "LoanTypeName");
+        ViewData["PropertyId"] = new SelectList(_context.Properties, "PropertyPk", "PropertyName");
+        ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehiclePk", "VehicleName");
             return Page();
         }
 
@@ -42,8 +39,8 @@ namespace MyBudget.WebUI.Pages.Loan
                 return Page();
             }
 
-            await _repoWrapper.Loans.Add(Loans);
-            await _repoWrapper.SaveChanges();
+            _context.Loans.Add(Loans);
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
