@@ -80,13 +80,10 @@
     <Build Include="dbo\Tables\tuition.sql" />
     <Build Include="dbo\Tables\vehicles.sql" />
     <Build Include="dbo\Tables\years.sql" />
-    <None Include="dbo\Data\SeedData.sql" />
+    <Build Include="dbo\Data\SeedData.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Snapshots\MyBudget_Empty.dacpac" />
-    <None Include="Snapshots\MyBudget_SeedData.dacpac" />
-    <None Include="Snapshots\MyBudget_MigratedAllData.dacpac" />
-    <None Include="dbo\Data\MigratedData.sql" />
+    <None Include="Snapshots\MyBudget-Base.dacpac" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="dbo\Data\Script.PostDeployment.sql" />
