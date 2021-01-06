@@ -284,10 +284,10 @@ namespace MyBudget.Domain.Imports
                     string[] fields = parser.ReadFields();
                     if (fields.Length > 0)
                     {
-                        string[] date = fields[0].Split('/');
-                        month = Convert.ToInt32(date[0]);
-                        day = Convert.ToInt32(date[1]);
-                        year = Convert.ToInt32(date[2]);
+                        string[] date = fields[0].Split('-');
+                        month = Convert.ToInt32(date[1]);
+                        day = Convert.ToInt32(date[2]);
+                        year = Convert.ToInt32(date[0]);
                         if (fields[4].StartsWith("-"))
                         {
                             amount = Math.Abs(Convert.ToDecimal(fields[4]));
@@ -402,10 +402,10 @@ namespace MyBudget.Domain.Imports
                     string[] fields = parser.ReadFields();
                     if (fields.Length > 0)
                     {
-                        string[] date = fields[0].Split('/');
-                        month = Convert.ToInt32(date[0]);
-                        day = Convert.ToInt32(date[1]);
-                        year = Convert.ToInt32(date[2]);
+                        string[] date = fields[0].Split('-');
+                        month = Convert.ToInt32(date[1]);
+                        day = Convert.ToInt32(date[2]);
+                        year = Convert.ToInt32(date[0]);
                         if (fields[4].StartsWith("-"))
                         {
                             amount = Math.Abs(Convert.ToDecimal(fields[4]));
