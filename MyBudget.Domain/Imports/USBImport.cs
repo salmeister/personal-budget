@@ -53,20 +53,28 @@ namespace MyBudget.Domain.Imports
 
         public string Import(bool preview)
         {
-            ProcessCredit();
-            ProcessChecking();
-
-            if (preview)
+            try
             {
-                return GenerateHTMLPreview();
+                ProcessCredit();
+                ProcessChecking();
+
+                if (preview)
+                {
+                    return GenerateHTMLPreview();
+                }
+                else
+                {
+                    AddExpenses();
+                    AddPayments();
+                    AddIncome();
+                    _context.SaveChanges();
+
+                    return $"<p>{_month.ToString()}-{_year.ToString()} imported.</p>";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                AddExpenses();
-                AddPayments();
-                AddIcome();
-
-                return $"<p>{_month.ToString()}-{_year.ToString()} imported.</p>";
+                return $"<p>{ex.Message} imported.</p>";
             }
         }
 
@@ -120,7 +128,7 @@ namespace MyBudget.Domain.Imports
             return sb.ToString();
         }
 
-        private void AddIcome()
+        private void AddIncome()
         {
             var incomeSources = _context.IncomeSources;
             var familyMembers = _context.FamilyMembers;
@@ -269,7 +277,6 @@ namespace MyBudget.Domain.Imports
             int year = 0;
             decimal amount = 0;
             string desc = "";
-            string memo = "";
 
             StreamReader srChecking = File.OpenText(_checkingFile);
             srChecking.ReadLine(); //strip header
@@ -297,11 +304,10 @@ namespace MyBudget.Domain.Imports
                             amount = Convert.ToDecimal(fields[4]) * -1;
                         }
                         desc = fields[2].ToUpper();
-                        memo = fields[3].ToUpper();
 
                         if (_month == month && _year == year)
                         {
-                            if (_context.ImportDescriptions.Where(d => d.LoanId == 8).Select(d => d.Description.ToUpper()).Any(s => memo.Contains(s)))
+                            if (_context.ImportDescriptions.Where(d => d.LoanId == 8).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 mortgage += amount;
                             }
@@ -326,7 +332,7 @@ namespace MyBudget.Domain.Imports
                             {
                                 electric += amount;
                             }
-                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 3).Select(d => d.Description.ToUpper()).Any(s => memo.Contains(s)))
+                            if (_context.ImportDescriptions.Where(d => d.ExpenseTypeId == 3).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 water += amount;
                             }
