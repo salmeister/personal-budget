@@ -39,7 +39,7 @@ namespace MyBudget.Domain.Imports
         private decimal umbrella_ins = 0;
         private decimal katie_life_ins = 0;
         private decimal andy_life_ins = 0;
-        private Dictionary<DateTime, decimal> usb = new Dictionary<DateTime, decimal>();
+        private Dictionary<DateTime, decimal> nm = new Dictionary<DateTime, decimal>();
         private Dictionary<DateTime, decimal> bes = new Dictionary<DateTime, decimal>();
 
         public USBImport(MyBudgetContext context, int month, int year, string checkingFile, string creditFile)
@@ -116,9 +116,9 @@ namespace MyBudget.Domain.Imports
             {
                 sb.Append("<tr><td>Andy life insurance</td><td>" + andy_life_ins + "</td></tr>");
             }
-            foreach (KeyValuePair<DateTime, decimal> usbPaycheck in usb)
+            foreach (KeyValuePair<DateTime, decimal> nmPaycheck in nm)
             {
-                sb.Append("<tr><td>USB paycheck</td><td>" + usbPaycheck.Value + "</td></tr>");
+                sb.Append("<tr><td>NM paycheck</td><td>" + nmPaycheck.Value + "</td></tr>");
             }
             foreach (KeyValuePair<DateTime, decimal> besPaycheck in bes)
             {
@@ -134,15 +134,15 @@ namespace MyBudget.Domain.Imports
             var familyMembers = _context.FamilyMembers;
 
 
-            if (usb.Count > 0)
+            if (nm.Count > 0)
             {
                 Income income = new Income();
 
-                foreach (KeyValuePair<DateTime, decimal> usbPaycheck in usb)
+                foreach (KeyValuePair<DateTime, decimal> nmPaycheck in nm)
                 {
-                    var incomeSource = incomeSources.Where(i => i.IncomeSourceAcro.ToUpper() == "USB").FirstOrDefault();
+                    var incomeSource = incomeSources.Where(i => i.IncomeSourceAcro.ToUpper() == "NM").FirstOrDefault();
                     var familyMember = familyMembers.Where(f => f.FirstName.ToUpper() == "ANDY").FirstOrDefault();
-                    _context.Income.Add(new Income() { Amount = usbPaycheck.Value, ReceivedDate = usbPaycheck.Key, FamilyMemberId = familyMember.FamilyMemberPk, IncomeSourceId = incomeSource.IncomeSourcePk, MonthId = _month, YearId = _year });
+                    _context.Income.Add(new Income() { Amount = nmPaycheck.Value, ReceivedDate = nmPaycheck.Key, FamilyMemberId = familyMember.FamilyMemberPk, IncomeSourceId = incomeSource.IncomeSourcePk, MonthId = _month, YearId = _year });
                 }
             }
 
@@ -315,10 +315,9 @@ namespace MyBudget.Domain.Imports
                             {
                                 cable_internet += amount;
                             }
-                            if (_context.ImportDescriptions.Where(d => d.IncomeSourceId == 5).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
+                            if (_context.ImportDescriptions.Where(d => d.IncomeSourceId == 10).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
-                                amount = (amount * -1) + 100;
-                                usb.Add(new DateTime(year, month, day), amount);
+                                nm.Add(new DateTime(year, month, day), amount * -1);
                             }
                             if (_context.ImportDescriptions.Where(d => d.IncomeSourceId == 9).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
