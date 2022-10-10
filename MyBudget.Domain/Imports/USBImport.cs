@@ -315,7 +315,7 @@ namespace MyBudget.Domain.Imports
                             {
                                 cable_internet += amount;
                             }
-                            if (_context.ImportDescriptions.Where(d => d.IncomeSourceId == 10).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
+                            if (_context.ImportDescriptions.Where(d => d.IncomeSourceId == 12).Select(d => d.Description.ToUpper()).Any(s => desc.Contains(s)))
                             {
                                 nm.Add(new DateTime(year, month, day), amount * -1);
                             }

@@ -1,0 +1,1 @@
+C:\path\to\repo> docker build -f MyBudget.WebUI\Dockerfile .
